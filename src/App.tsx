@@ -1,4 +1,3 @@
-import React from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import PublicLayout from './Layout/Public-layout'
 import Homepage from './Routes/Main/Homepage'
