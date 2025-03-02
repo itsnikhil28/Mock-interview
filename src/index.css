@@ -123,7 +123,16 @@
     @apply bg-background text-foreground;
   }
 
-  .cl-internal-1dauvpw, .cl-internal-1hp5nqm {
+  .cl-internal-1dauvpw,
+  .cl-internal-1hp5nqm {
     display: none;
+  }
+
+  .text-outline {
+    color: white;
+    text-shadow: -1px -1px rgba(0, 0, 0, 0.6),
+      1px -1px rgba(0, 0, 0, 0.6),
+      -1px 1px rgba(0, 0, 0, 0.6),
+      1px 1px rgba(0, 0, 0, 0.6);
   }
 }

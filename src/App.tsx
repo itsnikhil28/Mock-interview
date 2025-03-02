@@ -6,6 +6,10 @@ import SignInPage from './Routes/Authenticated/Sign-In'
 import SignUpPage from './Routes/Authenticated/Sign-up'
 import ProtectedRoutes from './Routes/Protected/protected-routes'
 import ProtectedLayout from './Layout/Protected-layout'
+import GeneratePage from './Routes/Protected/Generate-page'
+import CreateEditPage from './Routes/Protected/Create-Edit-Page'
+import MockLoadPage from './Routes/Protected/Mock-load-page'
+import Mockinterviewpage from './Routes/Protected/Mock-interview-page'
 
 function App() {
     const router = createBrowserRouter([
@@ -35,10 +39,28 @@ function App() {
             ]
         },
         {
-            path: '/',
+            path: '/generate',
             element: <ProtectedRoutes>
                 <ProtectedLayout />
-            </ProtectedRoutes>
+            </ProtectedRoutes>,
+            children: [
+                {
+                    path: '/generate',
+                    element: <GeneratePage />
+                },
+                {
+                    path: ':interviewId',
+                    element: <CreateEditPage />
+                },
+                {
+                    path: 'interview/:interviewId',
+                    element: <MockLoadPage />
+                },
+                {
+                    path: 'interview/:interviewId/start',
+                    element: <Mockinterviewpage />
+                }
+            ]
         }
     ])
     return <RouterProvider router={router}></RouterProvider>
