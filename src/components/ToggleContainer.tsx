@@ -17,9 +17,8 @@ export default function ToggleContainer() {
             <SheetContent side="left">
                 <SheetHeader>
                     <SheetTitle></SheetTitle>
-                    <SheetDescription>
+                    <SheetDescription />
                         <NavigationRoutes isMobile />
-                    </SheetDescription>
                 </SheetHeader>
             </SheetContent>
         </Sheet>
