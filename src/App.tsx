@@ -10,6 +10,7 @@ import GeneratePage from './Routes/Protected/Generate-page'
 import CreateEditPage from './Routes/Protected/Create-Edit-Page'
 import MockLoadPage from './Routes/Protected/Mock-load-page'
 import Mockinterviewpage from './Routes/Protected/Mock-interview-page'
+import Feedback from './Routes/Protected/Feedback'
 
 function App() {
     const router = createBrowserRouter([
@@ -59,6 +60,10 @@ function App() {
                 {
                     path: 'interview/:interviewId/start',
                     element: <Mockinterviewpage />
+                },
+                {
+                    path: 'feedback/:interviewId',
+                    element:<Feedback />
                 }
             ]
         }

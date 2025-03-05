@@ -20,3 +20,16 @@ export interface Interview {
     created_at: Timestamp
     updated_at: Timestamp
 }
+
+export interface Useranswer {
+    id: string
+    mockIdRef: string
+    question: string
+    correct_ans: string
+    user_ans: string
+    feedback: string
+    rating: number
+    userId: string
+    created_at: Timestamp
+    updated_at: Timestamp
+}

@@ -30,6 +30,8 @@ export default function QuestionSection({ questions }: QuestionSectionprops) {
 
                 // ✅ Select a specific voice (change the index or filter by name/language)
                 speech.voice = voices.find(v => v.name.includes("Google हिन्दी")) || voices[0];
+                // speech.voice = voices.find(v => v.name.includes("Google UK English Female")) || voices[0];
+                
 
                 // ✅ Set voice properties (optional)
                 speech.rate = 1;   // Speed (default: 1)

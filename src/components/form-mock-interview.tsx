@@ -17,6 +17,7 @@ import { Textarea } from "./ui/textarea"
 import { chatSession } from "@/scripts"
 import { addDoc, collection, doc, serverTimestamp, updateDoc } from "firebase/firestore"
 import { db } from "@/config/firebase.config"
+import { cleanAiResponse } from "./clean-airesponse"
 
 interface FormMockInterviewprops {
     initialdata: Interview | null
@@ -50,45 +51,6 @@ export default function FormMockInterview({ initialdata }: FormMockInterviewprop
     const actions = initialdata ? "Save Changes" : "Create "
 
     const toastmessage = initialdata ? { title: "Updated..!", description: "Changes saved Successfully..." } : { title: "Created..!", description: "New Mock Interview Created..." }
-
-    const cleanAiResponse = (responseText: string): any[] | null => {
-        try {
-            // Step 1: Trim surrounding whitespace
-            let cleanText = responseText.trim();
-
-            // Step 2: Remove "json" or code block symbols
-            cleanText = cleanText.replace(/(json|```|`)/g, "");
-
-            // Step 3: Extract the first JSON array found
-            const jsonArrayMatch = cleanText.match(/\[.*\]/s);
-
-            if (!jsonArrayMatch) {
-                console.error("cleanAiResponse: No JSON array found in response:", responseText);
-                return null;
-            }
-
-            cleanText = jsonArrayMatch[0];
-
-            // Step 4: Parse the clean JSON text
-            try {
-                const parsedJson = JSON.parse(cleanText);
-
-                // Check if it's an array
-                if (!Array.isArray(parsedJson)) {
-                    console.error("cleanAiResponse: Parsed JSON is not an array:", cleanText);
-                    return null;
-                }
-
-                return parsedJson;
-            } catch (parseError) {
-                console.error("cleanAiResponse: Invalid JSON format:", parseError, cleanText);
-                return null;
-            }
-        } catch (error) {
-            console.error("cleanAiResponse: Unexpected error:", error, responseText);
-            return null;
-        }
-    };
 
     const generateairesponse = async (data: FormData) => {
         const prompt = `
@@ -244,7 +206,7 @@ export default function FormMockInterview({ initialdata }: FormMockInterviewprop
                                 </div>
                                 <FormMessage className="text-sm" />
                                 <FormControl>
-                                    <Input type="number" disabled={loading} className="h-12" placeholder="eg:- 0 or more" {...field} value={field.value || ""} />
+                                    <Input type="number" disabled={loading} className="h-12" placeholder="eg:- 0 or more" {...field} value={field.value == 0 ? "0" : field.value || ""} />
                                 </FormControl>
                             </FormItem>
                         )} />
@@ -264,9 +226,9 @@ export default function FormMockInterview({ initialdata }: FormMockInterviewprop
 
                         <div className="w-full flex items-center justify-end gap-6">
                             <Button type="button" size={"sm"} variant={"outline"} disabled={isSubmitting || loading}
-                                // onClick={() => 
-                                //     // console.log("Form Reset Function:", form.reset)
-                                // }
+                            // onClick={() => 
+                            //     // console.log("Form Reset Function:", form.reset)
+                            // }
                             >Reset</Button>
                             <Button type="submit" size={"sm"} disabled={isSubmitting || loading || !isValid}>{loading ? (<Loader className="text-gray-50 animate-spin" />) : (actions)}</Button>
                         </div>
