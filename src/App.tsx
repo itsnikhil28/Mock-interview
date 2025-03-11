@@ -11,6 +11,12 @@ import CreateEditPage from './Routes/Protected/Create-Edit-Page'
 import MockLoadPage from './Routes/Protected/Mock-load-page'
 import Mockinterviewpage from './Routes/Protected/Mock-interview-page'
 import Feedback from './Routes/Protected/Feedback'
+import Page404 from './Routes/Main/Page404'
+import ResumeDashboard from './Routes/Protected/Resume/Resume-Dashboard'
+import ResumeCreate from './Routes/Protected/Resume/ResumeCreate'
+import Resumeview from './Routes/Protected/Resume/Resume-view'
+import Service from './Routes/Main/Service'
+import Aboutus from './Routes/Main/About-us'
 
 function App() {
     const router = createBrowserRouter([
@@ -18,10 +24,19 @@ function App() {
             // public route 
             path: '/',
             element: <PublicLayout />,
+            errorElement: <Page404 />,
             children: [
                 {
                     path: '/',
                     element: <Homepage />
+                },
+                {
+                    path: '/services',
+                    element: <Service />
+                },
+                {
+                    path: '/about-us',
+                    element: <Aboutus />
                 }
             ]
         },
@@ -63,7 +78,27 @@ function App() {
                 },
                 {
                     path: 'feedback/:interviewId',
-                    element:<Feedback />
+                    element: <Feedback />
+                }
+            ]
+        },
+        {
+            path: '/resume',
+            element: <ProtectedRoutes>
+                <ProtectedLayout />
+            </ProtectedRoutes>,
+            children: [
+                {
+                    path: '/resume',
+                    element: <ResumeDashboard />
+                },
+                {
+                    path: ':resumeId',
+                    element: <ResumeCreate />
+                },
+                {
+                    path: ':resumeId/view',
+                    element: <Resumeview />
                 }
             ]
         }

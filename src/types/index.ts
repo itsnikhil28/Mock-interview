@@ -16,6 +16,7 @@ export interface Interview {
     experience: number
     userId: string
     techstack: string
+    noofquestions: number
     questions: { question: string; answer: string }[]
     created_at: Timestamp
     updated_at: Timestamp
@@ -32,4 +33,53 @@ export interface Useranswer {
     userId: string
     created_at: Timestamp
     updated_at: Timestamp
+}
+
+export interface Resume {
+    id: string
+    userId : string
+    resumeTitle: string
+    userEmail: string
+    userName: string
+    themecolor : string
+    created_at: Timestamp
+    updated_at: Timestamp
+
+    // resumedetails
+    firstName: string
+    lastName: string
+    jobTitle: string
+    address: string
+    phone: string
+    email: string
+
+    //summary
+    summary: string
+
+    //education
+    education: {
+        universityName: string;
+        degree: string;
+        major: string;
+        startDate: Date;
+        endDate: Date;
+        description: string;
+    }[]
+
+    //experience detail
+    experience: {
+        title: string
+        companyName: string
+        city: string
+        state: string
+        startDate: string | Date
+        endDate: string | Date
+        workSummary: string
+    }[]
+
+    //skill
+    skill: {
+        name: string
+        rating: number
+    }[]
 }

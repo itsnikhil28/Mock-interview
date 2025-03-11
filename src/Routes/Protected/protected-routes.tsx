@@ -2,6 +2,7 @@ import { useAuth } from "@clerk/clerk-react";
 import React from "react";
 import { Navigate } from "react-router-dom";
 import LoaderPage from "../Loader/Loader";
+import { toast } from "sonner";
 
 export default function ProtectedRoutes({ children }: { children: React.ReactNode }) {
 
@@ -12,7 +13,8 @@ export default function ProtectedRoutes({ children }: { children: React.ReactNod
     }
 
     if (!isSignedIn) {
-        return <Navigate to={'sign-in'} replace />
+        toast.error("Please Login Again")
+        return <Navigate to={'/sign-in'} />
     }
     return children
 }

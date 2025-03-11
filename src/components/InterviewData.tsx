@@ -1,6 +1,4 @@
 import { Interview } from "@/types"
-import { useAuth } from "@clerk/clerk-react"
-import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "./ui/badge"
@@ -16,12 +14,6 @@ interface InterviewDataProps {
 
 export default function InterviewData({ interview, onmockpage = false }: InterviewDataProps) {
     const navigate = useNavigate()
-    const [loading, setloading] = useState(false)
-    const { userId } = useAuth()
-
-    const ondelete = async () => {
-
-    }
 
     return (
         <Card className="p-4 rounded-md shadow-none hover:shadow-md shadow-gray-100 cursor-pointer transition-all space-y-4">
@@ -49,8 +41,8 @@ export default function InterviewData({ interview, onmockpage = false }: Intervi
                         )} disabled={false} buttonClassName="hover:text-sky-500" icon={<Eye />} loading={false} />
 
                         {/* edit  */}
-                        <TooltipButton content="Feedback" buttonVariant={"ghost"} onClick={()=>(
-                            navigate(`/generate/feedback/${interview.id}`,{replace:true})
+                        <TooltipButton content="Feedback" buttonVariant={"ghost"} onClick={() => (
+                            navigate(`/generate/feedback/${interview.id}`, { replace: true })
                         )} disabled={false} buttonClassName="hover:text-yellow-500" icon={<Newspaper />} loading={false} />
 
                         {/* start */}

@@ -1,21 +1,26 @@
 import Container from "@/components/Container";
 import Marqueimg from "@/components/Marque-img";
 import { Button } from "@/components/ui/button";
-import { Sparkles } from "lucide-react";
+import { BookOpenCheck, Sparkles } from "lucide-react";
 import Marquee from "react-fast-marquee";
 import { Link } from "react-router-dom";
+import accordiondata from "./accordion-question.json"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 export default function Homepage() {
+    const [activeFeed, setactiveFeed] = useState(0)
     return (
         <div className="flex-col w-full pb-24">
             <Container>
                 <div className="my-8">
                     <h2 className="text-3xl text-center md:text-left md:text-6xl">
                         <span className="text-outline font-semibold md:text-8xl">
-                            AI SUPERPOWER 
+                            AI SUPERPOWER
                         </span>
                         <span className="text-gray-500 font-extrabold">
-                             - A better way to
+                            - A better way to
                         </span>
                         <br />
                         improve your interview chances and skills
@@ -110,6 +115,27 @@ export default function Homepage() {
                         </Link>
                     </div>
                 </div>
+
+                <h2 className="text-2xl md:text-3xl">
+                    FAQs
+                </h2>
+                <Accordion type="single" collapsible className="space-y-6">
+                    {accordiondata.map((item, i) => (
+                        <AccordionItem value={item.question} key={i} className="border rounded-lg shadow-md">
+                            <AccordionTrigger onClick={() => setactiveFeed(item.id)}
+                                className={cn("px-5 py-4 flex items-center justify-between text-base rounded-t-lg transition-colors hover:no-underline cursor-pointer",
+                                    activeFeed === item.id ? "bg-gradient-to-r from-purple-50 to-blue-50" : "hover:bg-gray-50")}>
+                                {item.question}
+                            </AccordionTrigger>
+                            <AccordionContent className="px-5 py-6 bg-white rounded-b-lg space-y-5 shadow-inner flex">
+                                <BookOpenCheck className="inline mr-2 text-yellow-400 size-13 mb-0" />
+                                <div className="font-semibold text-gray-700">
+                                    {item.answer}
+                                </div>
+                            </AccordionContent>
+                        </AccordionItem>
+                    ))}
+                </Accordion>
             </Container>
         </div>
     )

@@ -7,7 +7,7 @@ import ToggleContainer from "./ToggleContainer"
 
 export default function Header() {
     return (
-        <header className={cn('w-full border-b duration-150 transition-all ease-in-out')}>
+        <header className={cn('w-full border-b duration-150 transition-all ease-in-out')} id="header">
             <Container>
                 <div className="flex items-center gap-4 w-full">
                     {/* logo */}

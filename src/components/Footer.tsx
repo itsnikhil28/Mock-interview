@@ -44,7 +44,7 @@ const FooterLink: React.FC<FooterLinkProps> = ({ to, children }) => {
 
 export default function Footer() {
     return (
-        <div className="w-full bg-black text-gray-300 hover:text-gray-100 py-8">
+        <div className="w-full bg-black text-gray-300 hover:text-gray-100 py-8" id='footer'>
             <Container>
                 <div className="text-center md:text-left grid grid-cols-1 md:grid-cols-3 gap-8">
                     {/* First Column: Links */}

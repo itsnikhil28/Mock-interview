@@ -49,6 +49,10 @@ export default function RecordAnswer({ question, iswebcam, setiswebcam }: Record
                 return
             }
 
+            if(useranswer.length>50){
+                toast.warning("",{ description: "Save your answer before moving to the next question" })
+            }
+
             const airesult = await generateresult(question.question, question.answer, useranswer);
 
             setairesult(airesult)
@@ -143,7 +147,7 @@ export default function RecordAnswer({ question, iswebcam, setiswebcam }: Record
                 toast("Saved", { description: "Your answer has been saved.." })
             }
 
-            if(userId){
+            if (userId) {
                 fetchUserAnswer(userId, currentquestion)
             }
 
@@ -199,7 +203,7 @@ export default function RecordAnswer({ question, iswebcam, setiswebcam }: Record
                     <VideoOff className='min-h-5 min-w-5' />
                 ) : (
                     <Video className='min-h-5 min-w-5' />
-                )} onClick={() => {setiswebcam(!iswebcam); recorduseranswer()}} />
+                )} onClick={() => { setiswebcam(!iswebcam); recorduseranswer() }} />
 
                 <TooltipButton content={isRecording ? "Stop Recording" : "Start Recording"} icon={isRecording ? (
                     <CircleStop className='min-h-5 min-w-5' />

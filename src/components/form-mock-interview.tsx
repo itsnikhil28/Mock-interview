@@ -15,9 +15,10 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/f
 import { Input } from "./ui/input"
 import { Textarea } from "./ui/textarea"
 import { chatSession } from "@/scripts"
-import { addDoc, collection, doc, serverTimestamp, updateDoc } from "firebase/firestore"
+import { addDoc, collection, deleteDoc, doc, serverTimestamp, updateDoc } from "firebase/firestore"
 import { db } from "@/config/firebase.config"
 import { cleanAiResponse } from "./clean-airesponse"
+import { SaveModal } from "./save-modal"
 
 interface FormMockInterviewprops {
     initialdata: Interview | null
@@ -28,6 +29,7 @@ const formschema = z.object({
     description: z.string().min(10, 'Description is required and more than 10 characters'),
     experience: z.coerce.number().min(0, "Experience cannot be empty or negative"),
     techstack: z.string().min(1, "Tech Stack must be at least a character"),
+    noofquestions: z.coerce.number().min(5, "No of questions should be more than 5"),
 })
 
 type FormData = z.infer<typeof formschema>
@@ -39,6 +41,7 @@ export default function FormMockInterview({ initialdata }: FormMockInterviewprop
         defaultValues: initialdata || {}
     })
 
+    const [open, setopen] = useState(false); // State to control modal visibility
     const { isValid, isSubmitting } = form.formState
     const [loading, setloading] = useState(false)
     const navigate = useNavigate()
@@ -54,7 +57,7 @@ export default function FormMockInterview({ initialdata }: FormMockInterviewprop
 
     const generateairesponse = async (data: FormData) => {
         const prompt = `
-        As an experienced prompt engineer, generate a JSON array containing 5 technical interview questions along with detailed answers based on the following job information. Each object in the array should have the fields "question" and "answer", formatted as follows:
+        As an experienced prompt engineer, generate a JSON array containing ${data?.noofquestions} technical interview questions along with detailed answers based on the following job information. Each object in the array should have the fields "question" and "answer", formatted as follows:
 
         [
           { "question": "<Question text>", "answer": "<Answer text>" },
@@ -86,7 +89,7 @@ export default function FormMockInterview({ initialdata }: FormMockInterviewprop
         ...
         ]
 
-        Please format the output strictly as an array of JSON objects without any additional labels, code blocks, or explanations. Return only the JSON array with questions and answers.
+        Please format the output strictly as an array of JSON objects without any additional labels, code blocks, or explanations. Return only the JSON array with questions and answers and answers to be in parapraph only no code no links.
         `;
 
         const aiResult = await chatSession.sendMessage(prompt);
@@ -141,6 +144,23 @@ export default function FormMockInterview({ initialdata }: FormMockInterviewprop
         }
     }
 
+    const deletedata = async () => {
+        try {
+            setloading(true);
+            if (initialdata?.id) {
+                await deleteDoc(doc(db, 'interviews', initialdata.id)); // Delete document from Firestore
+                toast.success("Deleted!", { description: "Mock Interview deleted successfully." });
+                navigate('/generate', { replace: true }); // Redirect after deletion
+            }
+        } catch (error) {
+            console.error("Error deleting document:", error);
+            toast.error("Error!", { description: "Failed to delete mock interview." });
+        } finally {
+            setloading(false);
+            setopen(false);
+        }
+    };
+
     useEffect(() => {
         if (initialdata) {
             form.reset({
@@ -148,6 +168,7 @@ export default function FormMockInterview({ initialdata }: FormMockInterviewprop
                 description: initialdata.description,
                 experience: initialdata.experience,
                 techstack: initialdata.techstack,
+                noofquestions : initialdata.noofquestions,
             })
         }
     }, [initialdata, form])
@@ -155,13 +176,17 @@ export default function FormMockInterview({ initialdata }: FormMockInterviewprop
 
     return (
         <div className="w-full flex-col space-y-4">
+
+            {/* modal  */}
+            <SaveModal isopen={open} onclose={() => setopen(false)} onconfirm={deletedata} loading={loading} />
+
             <Custombreadcrumb breadCrumpPage={breadCrumpPage} breadCrumpItems={[{ label: "Mock Interview", link: '/generate' }]} />
 
             <div className="mt-4 flex items-center justify-between w-full">
                 <GenerateHeadings title={title} issubheading />
 
                 {initialdata && (
-                    <Button size={"icon"} variant={"ghost"}>
+                    <Button size={"icon"} variant={"ghost"} onClick={() => setopen(!open)}>
                         <Trash2 className="min-w-4 min-h-4 text-red-500" />
                     </Button>
                 )}
@@ -220,6 +245,19 @@ export default function FormMockInterview({ initialdata }: FormMockInterviewprop
                                 <FormMessage className="text-sm" />
                                 <FormControl>
                                     <Textarea disabled={loading} className="h-12" placeholder="eg:- React, Typescript..." {...field} value={field.value || ""} />
+                                </FormControl>
+                            </FormItem>
+                        )} />
+
+                        {/* noofquestions  */}
+                        <FormField control={form.control} name="noofquestions" render={({ field }) => (
+                            <FormItem className="w-full space-y-4">
+                                <div className="w-full flex items-center justify-between">
+                                    <FormLabel>No of Questions</FormLabel>
+                                </div>
+                                <FormMessage className="text-sm" />
+                                <FormControl>
+                                    <Input type="number" disabled={loading} min={5} className="h-12" placeholder="eg:- more than 5" {...field} value={field.value || ""} />
                                 </FormControl>
                             </FormItem>
                         )} />

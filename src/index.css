@@ -135,4 +135,24 @@
       -1px 1px rgba(0, 0, 0, 0.6),
       1px 1px rgba(0, 0, 0, 0.6);
   }
+
+  @media print {
+    .progress-fill {
+      /* background-color: inherit !important; */
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+  }
+
+  /* @media print {
+    #no-print-area,#header,#footer{
+      display: none;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      box-shadow: none;
+    }
+  } */
 }

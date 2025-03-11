@@ -1,0 +1,27 @@
+[
+    {
+        "id" : 1,
+        "question": "Why should I choose this AI Mock Interview platform for my technical interview preparation?",
+        "answer": "This platform, built with React, provides a robust and efficient mock interview experience. Its modern architecture ensures fast performance and a seamless user interface. You get access to features like code evaluation, performance tracking, and detailed feedback, all designed to help you excel in real interviews."
+    },
+    {
+        "id": 2,
+        "question": "How does the platform's design and structure enhance my learning experience?",
+        "answer": "The platform's well-organized structure and user-friendly interface make it easy to navigate and use. This allows you to focus on practicing your interview skills without distractions, leading to a more effective and efficient learning experience."
+    },
+    {
+        "id": 3,
+        "question": "Can I expect a realistic interview environment with this platform?",
+        "answer": "Absolutely. The platform simulates real-world technical interviews, including coding challenges, problem-solving scenarios, and performance evaluations. The goal is to provide a comprehensive and authentic practice experience that prepares you for actual interviews."
+    },
+    {
+        "id": 4,
+        "question": "How does this platform help me track my progress and identify areas for improvement?",
+        "answer": "The platform provides detailed feedback and performance metrics, allowing you to track your progress over time. You can identify your strengths and weaknesses, understand areas where you need to improve, and refine your skills accordingly."
+    },
+    {
+        "id": 5,
+        "question": "Does this platform support video call simulations for HR interview practice?",
+        "answer": "Yes! Our platform includes integrated video call functionality to simulate HR interviews. This feature allows you to practice your communication skills, body language, and overall presentation in a realistic virtual setting, preparing you for the video-based interviews that are common in today's hiring process."
+    }
+]
