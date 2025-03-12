@@ -5,11 +5,12 @@ export interface User {
     name: string
     email: string
     imageUrl: string
+    role: "interviewer" | "candidate"
     created_at: Timestamp | FieldValue
     updated_at: Timestamp | FieldValue
 }
 
-export interface Interview {
+export interface AiInterview {
     id: string
     position: string
     description: string
@@ -82,4 +83,25 @@ export interface Resume {
         name: string
         rating: number
     }[]
+}
+
+export interface LiveInterview {
+    id: string
+    title: string
+    description: string
+    status : string
+    userId: string
+    interviewerId : string[]
+    streamCallId : string
+    startTime: number
+    endTime : number
+    created_at: Timestamp
+    updated_at: Timestamp
+}
+
+export interface comments {
+    id: string
+    content : string
+    rating : string
+    interviewerId : string    
 }

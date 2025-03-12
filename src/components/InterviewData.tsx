@@ -1,4 +1,4 @@
-import { Interview } from "@/types"
+import { AiInterview } from "@/types"
 import { useNavigate } from "react-router-dom"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "./ui/badge"
@@ -8,7 +8,7 @@ import { Eye, Newspaper, Sparkles } from "lucide-react"
 
 
 interface InterviewDataProps {
-    interview: Interview
+    interview: AiInterview
     onmockpage?: boolean
 }
 

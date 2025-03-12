@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "@clerk/clerk-react";
 import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/config/firebase.config";
-import { Interview, Useranswer } from "@/types";
+import { AiInterview, Useranswer } from "@/types";
 import { toast } from "sonner";
 import LoaderPage from "../Loader/Loader";
 import Custombreadcrumb from "@/components/Custom-breadcrumb";
@@ -16,7 +16,7 @@ import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 export default function Feedback() {
-    const [interview, setInterview] = useState<Interview | null>(null);
+    const [interview, setInterview] = useState<AiInterview | null>(null);
     const [feedback, setFeedback] = useState<Useranswer[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeFeed, setActiveFeed] = useState("");
@@ -33,9 +33,9 @@ export default function Feedback() {
 
         const fetchInterviewData = async () => {
             try {
-                const interviewDoc = await getDoc(doc(db, "interviews", interviewId));
+                const interviewDoc = await getDoc(doc(db, "aiinterviews", interviewId));
                 if (interviewDoc.exists()) {
-                    setInterview({ id: interviewDoc.id, ...interviewDoc.data() } as Interview);
+                    setInterview({ id: interviewDoc.id, ...interviewDoc.data() } as AiInterview);
                 }
             } catch (error) {
                 toast.error("Failed to fetch interview details.");

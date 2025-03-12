@@ -1,5 +1,5 @@
 import { db } from "@/config/firebase.config";
-import { Interview } from "@/types";
+import { AiInterview } from "@/types";
 import { doc, getDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -13,7 +13,7 @@ import Webcam from "react-webcam";
 
 export default function MockLoadPage() {
     const { interviewId } = useParams<{ interviewId: string }>();
-    const [interview, setinterview] = useState<Interview | null>(null);
+    const [interview, setinterview] = useState<AiInterview | null>(null);
     const [isloading, setisloading] = useState(true);
     const [isWebCamEnabled, setIsWebCamEnabled] = useState(false);
 
@@ -34,10 +34,10 @@ export default function MockLoadPage() {
     const fetchinterview = async () => {
         if (interviewId) {
             try {
-                const interviewdoc = await getDoc(doc(db, "interviews", interviewId));
+                const interviewdoc = await getDoc(doc(db, "aiinterviews", interviewId));
 
                 if (interviewdoc.exists()) {
-                    setinterview({ id: interviewdoc.id, ...interviewdoc.data() } as Interview);
+                    setinterview({ id: interviewdoc.id, ...interviewdoc.data() } as AiInterview);
                 }
             } catch (error) {
                 console.log(error);

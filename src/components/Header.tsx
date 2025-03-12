@@ -4,8 +4,11 @@ import LogoContainer from "./LogoContainer"
 import NavigationRoutes from "./Navigation-routes"
 import ProfileContainer from "./ProfileContainer"
 import ToggleContainer from "./ToggleContainer"
+import { useUser } from "@/provider/User-Provider"
+import Interviewerdashboardbtn from "./Interviewer-dashboard-btn"
 
 export default function Header() {
+    const { role } = useUser()
     return (
         <header className={cn('w-full border-b duration-150 transition-all ease-in-out')} id="header">
             <Container>
@@ -19,6 +22,10 @@ export default function Header() {
                     </nav>
 
                     <div className="ml-auto flex items-center gap-6">
+                        {/* {interviewerbtn} */}
+                        {role && role === 'interviewer' && (
+                            <Interviewerdashboardbtn />
+                        )}
                         {/* profile */}
                         <ProfileContainer />
 

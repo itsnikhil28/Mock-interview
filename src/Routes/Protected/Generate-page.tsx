@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { db } from "@/config/firebase.config";
-import { Interview } from "@/types";
+import { AiInterview } from "@/types";
 import { useAuth } from "@clerk/clerk-react";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { Plus } from "lucide-react";
@@ -15,15 +15,15 @@ import { toast } from "sonner";
 export default function GeneratePage() {
     const { userId } = useAuth()
     const [loading, setloading] = useState(false)
-    const [interview, setinterview] = useState<Interview[]>([])
+    const [interview, setinterview] = useState<AiInterview[]>([])
 
-    const interviewquery = query(collection(db, 'interviews'), where('userId', '==', userId))
+    const interviewquery = query(collection(db, 'aiinterviews'), where('userId', '==', userId))
 
     const unsubscribe = onSnapshot(interviewquery, (snapshot) => {
-        const interviewlist: Interview[] = snapshot.docs.map(doc => {
+        const interviewlist: AiInterview[] = snapshot.docs.map(doc => {
             const id = doc.id
             return { id, ...doc.data() }
-        }) as Interview[]
+        }) as AiInterview[]
 
         setinterview(interviewlist)
         setloading(false)

@@ -1,4 +1,4 @@
-import { Interview } from "@/types"
+import { AiInterview } from "@/types"
 import Custombreadcrumb from "./Custom-breadcrumb"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -21,7 +21,7 @@ import { cleanAiResponse } from "./clean-airesponse"
 import { SaveModal } from "./save-modal"
 
 interface FormMockInterviewprops {
-    initialdata: Interview | null
+    initialdata: AiInterview | null
 }
 
 const formschema = z.object({
@@ -110,7 +110,7 @@ export default function FormMockInterview({ initialdata }: FormMockInterviewprop
                 if (isValid) {
                     const airesult = await generateairesponse(data)
 
-                    await updateDoc(doc(db, 'interviews', initialdata?.id), {
+                    await updateDoc(doc(db, 'aiinterviews', initialdata?.id), {
                         questions: airesult,
                         ...data,
                         updated_at: serverTimestamp(),
@@ -121,7 +121,7 @@ export default function FormMockInterview({ initialdata }: FormMockInterviewprop
             } else {
                 if (isValid) {
                     const airesult = await generateairesponse(data)
-                    await addDoc(collection(db, 'interviews'), {
+                    await addDoc(collection(db, 'aiinterviews'), {
                         ...data,
                         userId,
                         questions: airesult,
@@ -148,7 +148,7 @@ export default function FormMockInterview({ initialdata }: FormMockInterviewprop
         try {
             setloading(true);
             if (initialdata?.id) {
-                await deleteDoc(doc(db, 'interviews', initialdata.id)); // Delete document from Firestore
+                await deleteDoc(doc(db, 'aiinterviews', initialdata.id)); // Delete document from Firestore
                 toast.success("Deleted!", { description: "Mock Interview deleted successfully." });
                 navigate('/generate', { replace: true }); // Redirect after deletion
             }

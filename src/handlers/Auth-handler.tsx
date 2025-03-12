@@ -28,6 +28,7 @@ export default function AuthHandler() {
                             name: user.fullName || user.firstName || 'Anonymous',
                             email: user.primaryEmailAddress?.emailAddress || "N/a",
                             imageUrl: user.imageUrl || 'N/A',
+                            role: 'candidate',
                             created_at: serverTimestamp(),
                             updated_at: serverTimestamp()
                         }
@@ -41,6 +42,7 @@ export default function AuthHandler() {
                 }
             }
         }
+
         storeuserdata()
     }, [isSignedIn, user, pathname, navigate])
 

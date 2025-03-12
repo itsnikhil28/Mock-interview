@@ -136,6 +136,25 @@
       1px 1px rgba(0, 0, 0, 0.6);
   }
 
+  .str-video__device-settings__device-selector-title,
+  .str-video__device-settings__device-kind,
+  .str-video__device-settings__option,
+  .str-video__generic-menu,
+  .str-video__generic-menu--item,
+  .str-video__notification {
+    color: white;
+  }
+
+  .str-video__menu-container {
+    background-color: var(--str-video__base-color6);
+  }
+
+  [data-radix-scroll-area-viewport]>div {
+    display: block !important;
+    /* width: max-content; */
+    min-width: fit-content;
+  }
+
   @media print {
     .progress-fill {
       /* background-color: inherit !important; */

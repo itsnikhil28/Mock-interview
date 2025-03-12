@@ -105,7 +105,7 @@ export default function ResumeDashboard() {
             <Separator className="my-8" />
 
             <div className="md:grid md:grid-cols-3 gap-3 py-4 flex flex-col justify-center items-center ">
-                {loading || (
+                {loading || resume.length > 0 &&(
                     <div className='' onClick={()=>setopen(!open)}>
                         <div className='p-14 bg-gray-200 h-[280px] rounded-t-lg border-t-4'
                             style={{

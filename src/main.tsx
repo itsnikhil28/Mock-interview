@@ -1,9 +1,11 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import '@stream-io/video-react-sdk/dist/css/styles.css'
 import './index.css'
 import App from './App'
 import { ClerkProvider } from '@clerk/clerk-react'
 import ToastProvider from './provider/toast-provider'
+import { UserProvider } from './provider/User-Provider'
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
@@ -14,8 +16,10 @@ if (!PUBLISHABLE_KEY) {
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
-      <App />
-      <ToastProvider />
+      <UserProvider>
+        <App />
+        <ToastProvider />
+      </UserProvider>
     </ClerkProvider>
   </StrictMode>,
 )
