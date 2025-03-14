@@ -194,7 +194,7 @@ export default function EducationForm({ enableNext, refreshData }: Formsectionpr
                             universityName: '', degree: '', major: '', startDate: '', endDate: '', description: ''
                         })}>+ Add More Education fields</Button>
 
-                        <Button type="submit" disabled={isSubmitting || loading || !isValid}>
+                        <Button type="submit" disabled={isSubmitting || loading}>
                             {loading ? <Loader className="animate-spin" /> : actions}
                         </Button>
                     </form>

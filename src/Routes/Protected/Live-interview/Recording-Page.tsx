@@ -1,6 +1,5 @@
 import Custombreadcrumb from "@/components/Custom-breadcrumb"
 import RecordingCard from "@/components/RecordingCard"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { useUser } from "@clerk/clerk-react"
 import { Call, CallRecording, useStreamVideoClient } from "@stream-io/video-react-sdk"
 import { LoaderIcon } from "lucide-react"
@@ -28,6 +27,7 @@ export default function RecordingPage() {
                 })
 
                 setCalls(calls)
+
             } catch (error) {
                 console.log("Here is the error : ", error)
             } finally {
@@ -39,7 +39,7 @@ export default function RecordingPage() {
         loadcalls()
     }, [client, user?.id])
 
-    const now = new Date()
+    // const now = new Date()
 
     // const endedcalls = calls?.filter(({state : {startsAt,endedAt}}:Call)=>{
     //     return (startsAt && new Date(startsAt) < now) || !!endedAt
@@ -55,6 +55,7 @@ export default function RecordingPage() {
 
     useEffect(() => {
         const fetchrecordings = async () => {
+            setloading(true)
             if (!calls || calls.length === 0) return
             try {
                 const calldata = await Promise.all(calls.map((call) => call.queryRecordings()))
@@ -63,6 +64,8 @@ export default function RecordingPage() {
                 setrecordings(allrecordings)
             } catch (error) {
                 console.log("Error Fetching records: ", error)
+            } finally {
+                setloading(false)
             }
         }
 
@@ -77,7 +80,7 @@ export default function RecordingPage() {
     return (
         <div className="container max-w-7xl mx-auto p-6 space-y-8">
 
-            <Custombreadcrumb breadCrumpPage={recordings.length === 1 ? "Recording":"Recordings"} breadCrumpItems={[{ label: "Dashboard", link: '/interviewer/dashboard' }]} />
+            <Custombreadcrumb breadCrumpPage={recordings.length === 1 ? "Recording" : "Recordings"} breadCrumpItems={[{ label: "Dashboard", link: '/interviewer/dashboard' }]} />
             {/* Header info  */}
 
             <div>
@@ -90,19 +93,19 @@ export default function RecordingPage() {
 
             {/* RECORDINGS GRID */}
 
-            <ScrollArea className="h-[calc(100vh-12rem)] mt-3">
-                {recordings && recordings.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-6">
-                        {recordings.map((r) => (
-                            <RecordingCard key={r.end_time} recording={r} />
-                        ))}
-                    </div>
-                ) : (
-                    <div className="flex flex-col items-center justify-center h-[400px] gap-4">
-                        <p className="text-xl font-medium text-muted-foreground">No recordings available</p>
-                    </div>
-                )}
-            </ScrollArea>
+            {/* <ScrollArea className="h-[calc(100vh-12rem)] mt-3"> */}
+            {recordings && recordings.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-6">
+                    {recordings.map((r) => (
+                        <RecordingCard key={r.end_time} recording={r} />
+                    ))}
+                </div>
+            ) : (
+                <div className="flex flex-col items-center justify-center h-[400px] gap-4">
+                    <p className="text-xl font-medium text-muted-foreground">No recordings available</p>
+                </div>
+            )}
+            {/* </ScrollArea> */}
         </div>
     )
 }

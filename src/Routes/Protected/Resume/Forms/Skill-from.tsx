@@ -135,7 +135,7 @@ export default function Skillform({ enableNext, refreshData }: Formsectionprops)
                             name: '', rating: 0
                         })}>+ Add More Skill</Button>
 
-                        <Button type="submit" disabled={isSubmitting || loading || !isValid}>
+                        <Button type="submit" disabled={isSubmitting || loading}>
                             {loading ? <Loader className="animate-spin" /> : actions}
                         </Button>
                     </form>

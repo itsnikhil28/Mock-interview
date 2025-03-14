@@ -43,7 +43,7 @@ export const TIME_SLOTS = [
     "23:00"
 ];
 
-export const QUICK_ACTIONS = [
+export const QUICK_ACTIONS_FOR_INTERVIEW = [
     {
         icon: Code2,
         title: "New Call",
@@ -68,6 +68,41 @@ export const QUICK_ACTIONS = [
     {
         icon: Clock,
         title: "Recordings",
+        description: "Access past interviews",
+        color: "orange-500",
+        gradient: "from-orange-500/10 via-orange-500/5 to-transparent",
+    },
+];
+
+export const QUICK_ACTIONS_FOR_CANDIDATE = [
+    {
+        icon: Code2,
+        title: "Request Interview",
+        location: "request-interview",
+        description: "Send a request for an interview with an interviewer",
+        color: "primary",
+        gradient: "from-primary/10 via-primary/5 to-transparent",
+    },
+    {
+        icon: Users,
+        title: "Join Instant Interview",
+        location: "join-instant-interview",
+        description: "Enter interview via invitation link",
+        color: "purple-500",
+        gradient: "from-purple-500/10 via-purple-500/5 to-transparent",
+    },
+    {
+        icon: Calendar,
+        title: "Scheduled Interview",
+        location : "scheduled-interview",
+        description: "View Your upcoming interviews",
+        color: "blue-500",
+        gradient: "from-blue-500/10 via-blue-500/5 to-transparent",
+    },
+    {
+        icon: Clock,
+        title: "Recordings",
+        location : "recordings",
         description: "Access past interviews",
         color: "orange-500",
         gradient: "from-orange-500/10 via-orange-500/5 to-transparent",
@@ -203,4 +238,6 @@ export interface CodeQuestion {
     constraints?: string[];
 }
 
-export type QuickActionType = (typeof QUICK_ACTIONS)[number];
+export type QuickActionType = (typeof QUICK_ACTIONS_FOR_INTERVIEW)[number];
+
+export type QuickActionTypeCandidate = (typeof QUICK_ACTIONS_FOR_CANDIDATE)[number];

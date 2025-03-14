@@ -38,11 +38,11 @@ export interface Useranswer {
 
 export interface Resume {
     id: string
-    userId : string
+    userId: string
     resumeTitle: string
     userEmail: string
     userName: string
-    themecolor : string
+    themecolor: string
     created_at: Timestamp
     updated_at: Timestamp
 
@@ -85,23 +85,34 @@ export interface Resume {
     }[]
 }
 
+export interface RequestedInterview {
+    id: string
+    userId: string
+    interviewerId: string
+    userName: string
+    userEmail: string
+    resume: string
+    created_at: Timestamp
+    updated_at: Timestamp
+}
+
 export interface LiveInterview {
     id: string
     title: string
     description: string
-    status : string
+    status: string
     userId: string
-    interviewerId : string[]
-    streamCallId : string
+    interviewerId: string[]
+    streamCallId: string
     startTime: number
-    endTime : number
+    endTime: number
     created_at: Timestamp
     updated_at: Timestamp
 }
 
 export interface comments {
     id: string
-    content : string
-    rating : string
-    interviewerId : string    
+    content: string
+    rating: string
+    interviewerId: string
 }

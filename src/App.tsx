@@ -23,6 +23,7 @@ import StreamClientProvider from './provider/StreamClientProvider'
 import MeetingPage from './Routes/Protected/Live-interview/Meeting-Page'
 import RecordingPage from './Routes/Protected/Live-interview/Recording-Page'
 import SchedulePage from './Routes/Protected/Live-interview/SchedulePage'
+import CandidateScheduledInterview from './Routes/Protected/Live-interview/Candidate-scheduled-interview'
 
 function App() {
     const router = createBrowserRouter([
@@ -93,18 +94,22 @@ function App() {
         {
             path: '/resume',
             element: <ProtectedRoutes>
-                <CheckRole allowedRoles={["candidate"]}>
-                    <ProtectedLayout />
-                </CheckRole>
+                <ProtectedLayout />
             </ProtectedRoutes>,
             children: [
                 {
                     path: '/resume',
-                    element: <ResumeDashboard />
+                    element:
+                        <CheckRole allowedRoles={["candidate"]}>
+                            <ResumeDashboard />
+                        </CheckRole>
                 },
                 {
                     path: ':resumeId',
-                    element: <ResumeCreate />
+                    element:
+                        <CheckRole allowedRoles={["candidate"]}>
+                            <ResumeCreate />
+                        </CheckRole >
                 },
                 {
                     path: ':resumeId/view',
@@ -125,7 +130,11 @@ function App() {
                     element: <Interviewdashboard />
                 },
                 {
-                    path:'meeting/:meetingId',
+                    path: 'candidate-dashboard',
+                    element: <Interviewdashboard />
+                },
+                {
+                    path: 'meeting/:meetingId',
                     element: <MeetingPage />
                 },
                 {
@@ -133,7 +142,15 @@ function App() {
                     element: <SchedulePage />
                 },
                 {
+                    path: 'candidate/scheduled-interview',
+                    element: <CandidateScheduledInterview />
+                },
+                {
                     path: 'interviewer/recordings',
+                    element: <RecordingPage />
+                },
+                {
+                    path: 'candidate/recordings',
                     element: <RecordingPage />
                 },
             ]

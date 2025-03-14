@@ -42,7 +42,7 @@ export default function FormMockInterview({ initialdata }: FormMockInterviewprop
     })
 
     const [open, setopen] = useState(false); // State to control modal visibility
-    const { isValid, isSubmitting } = form.formState
+    const {isValid, isSubmitting } = form.formState
     const [loading, setloading] = useState(false)
     const navigate = useNavigate()
     const { userId } = useAuth()
@@ -168,7 +168,7 @@ export default function FormMockInterview({ initialdata }: FormMockInterviewprop
                 description: initialdata.description,
                 experience: initialdata.experience,
                 techstack: initialdata.techstack,
-                noofquestions : initialdata.noofquestions,
+                noofquestions: initialdata.noofquestions,
             })
         }
     }, [initialdata, form])
@@ -268,7 +268,7 @@ export default function FormMockInterview({ initialdata }: FormMockInterviewprop
                             //     // console.log("Form Reset Function:", form.reset)
                             // }
                             >Reset</Button>
-                            <Button type="submit" size={"sm"} disabled={isSubmitting || loading || !isValid}>{loading ? (<Loader className="text-gray-50 animate-spin" />) : (actions)}</Button>
+                            <Button type="submit" size={"sm"} disabled={isSubmitting || loading}>{loading ? (<Loader className="text-gray-50 animate-spin" />) : (actions)}</Button>
                         </div>
                     </form>
                 </FormProvider>

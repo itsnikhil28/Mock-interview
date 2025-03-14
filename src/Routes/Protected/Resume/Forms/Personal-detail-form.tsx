@@ -177,7 +177,7 @@ export default function Personaldetailform({ enableNext,refreshData }:Formsectio
                         )} />
 
                         <div className="w-full flex items-center justify-end gap-6">
-                            <Button type="submit" size={"sm"} disabled={isSubmitting || loading || !isValid}>{loading ? (<Loader className="text-gray-50 animate-spin" />) : (actions)}</Button>
+                            <Button type="submit" size={"sm"} disabled={isSubmitting || loading}>{loading ? (<Loader className="text-gray-50 animate-spin" />) : (actions)}</Button>
                         </div>
                     </form>
                 </FormProvider>

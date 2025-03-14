@@ -1,17 +1,26 @@
 import Actioncard from "@/components/Action-card";
 import Meetingmodal from "@/components/Meeting-modal";
 import { useUser } from "@/provider/User-Provider"
-import { QUICK_ACTIONS } from "@/lib/helper";
+import { QUICK_ACTIONS_FOR_CANDIDATE, QUICK_ACTIONS_FOR_INTERVIEW } from "@/lib/helper";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
 export default function Interviewdashboard() {
     const { role } = useUser()
     const isInterviewer = role === 'interviewer';
     const [showModal, setShowModal] = useState(false)
-    const [modalType, setmodalType] = useState<"start" | "join">()
+    const [modalType, setmodalType] = useState<"start" | "join" | "request">()
     const navigate = useNavigate()
+    const location = useLocation();
 
+    const isOnInterviewerDashboard = location.pathname === "/interviewer/dashboard";
+
+    if (isInterviewer && !isOnInterviewerDashboard) {
+        return <Navigate to="/interviewer/dashboard" replace />;
+    }
+    if (!isInterviewer && isOnInterviewerDashboard) {
+        return <Navigate to="/candidate-dashboard" replace />;
+    }
 
     const handleQuickAction = (title: string) => {
         switch (title) {
@@ -27,6 +36,24 @@ export default function Interviewdashboard() {
 
             default:
                 navigate(`/interviewer/${title.toLowerCase()}`)
+                break;
+        }
+    }
+
+    const handleQuickActionCandidate = (location: string) => {
+        switch (location) {
+            case "join-instant-interview":
+                setmodalType('join')
+                setShowModal(true)
+                break;
+
+            case "request-interview":
+                setmodalType('request')
+                setShowModal(true)
+                break;
+
+            default:
+                navigate(`/candidate/${location}`)
                 break;
         }
     }
@@ -48,7 +75,7 @@ export default function Interviewdashboard() {
             {isInterviewer ? (
                 <>
                     <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {QUICK_ACTIONS.map((action, index) => (
+                        {QUICK_ACTIONS_FOR_INTERVIEW.map((action, index) => (
                             <Actioncard
                                 key={index}
                                 action={action}
@@ -60,8 +87,9 @@ export default function Interviewdashboard() {
                     <Meetingmodal
                         isOpen={showModal}
                         onClose={() => setShowModal(false)}
-                        title={modalType === "join" ? "Join Meeting" : "Start Meeting"}
+                        title={modalType === "request" ? "" : modalType === "join" ? "Join Meeting" : "Start Meeting"}
                         isJoinMeeting={modalType === "join"}
+                        interviewrequest={false}
                     />
                 </>
             ) : (
@@ -71,23 +99,23 @@ export default function Interviewdashboard() {
                         <p className="text-muted-foreground mt-1">View and join your scheduled interviews</p>
                     </div>
 
-                    {/* <div className="mt-8">
-                        {interviews === undefined ? (
-                            <div className="flex justify-center py-12">
-                                <Loader2Icon className="h-8 w-8 animate-spin text-muted-foreground" />
-                            </div>
-                        ) : interviews.length > 0 ? (
-                            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                                {interviews.map((interview) => (
-                                    // <MeetingCard key={interview._id} interview={interview} />
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="text-center py-12 text-muted-foreground">
-                                You have no scheduled interviews at the moment
-                            </div>
-                        )}
-                    </div> */}
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 py-12">
+                        {QUICK_ACTIONS_FOR_CANDIDATE.map((action, index) => (
+                            <Actioncard
+                                key={index}
+                                action={action}
+                                onClick={() => handleQuickActionCandidate(action.location)}
+                            />
+                        ))}
+                    </div>
+
+                    <Meetingmodal
+                        isOpen={showModal}
+                        onClose={() => setShowModal(false)}
+                        title={modalType === "request" ? "Request Interview" : modalType === "join" ? "Join Meeting" : "Start Meeting"}
+                        isJoinMeeting={modalType === "join"}
+                        interviewrequest={modalType === 'request'}
+                    />
                 </>
             )}
         </div>

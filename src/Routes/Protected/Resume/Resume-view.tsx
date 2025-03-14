@@ -65,7 +65,9 @@ export default function Resumeview() {
                             <Loader className="animate-spin size-10" />
                         </div>
                     ) : (
-                        <Resumepreview />
+                        <div className="max-w-[1000px] w-full mx-auto py-5 px-4 sm:px-6 lg:px-8">
+                            <Resumepreview />
+                        </div>
                     )}
                 </div>
             </div>

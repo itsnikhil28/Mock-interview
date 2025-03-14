@@ -127,7 +127,7 @@ export default function Summaryform({ enableNext, refreshData }: Formsectionprop
                             </FormItem>
                         )} />
                         <div className='mt-2 flex justify-end'>
-                            <Button type="submit" size={"sm"} disabled={isSubmitting || loading || !isValid}>{loading ? (<LoaderCircle className="text-gray-50 animate-spin" />) : (actions)}</Button>
+                            <Button type="submit" size={"sm"} disabled={isSubmitting || loading}>{loading ? (<LoaderCircle className="text-gray-50 animate-spin" />) : (actions)}</Button>
                         </div>
                     </form>
                 </FormProvider>

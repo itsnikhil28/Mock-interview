@@ -1,8 +1,8 @@
 import { db } from "@/config/firebase.config"
-import { LiveInterview, User } from "@/types"
+import { LiveInterview, RequestedInterview, User } from "@/types"
 import { useUser } from "@clerk/clerk-react"
 import { useStreamVideoClient } from "@stream-io/video-react-sdk"
-import { addDoc, collection, getDocs, serverTimestamp } from "firebase/firestore"
+import { addDoc, collection, getDocs, query, serverTimestamp, where } from "firebase/firestore"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog"
@@ -23,9 +23,11 @@ export default function InterviewScheduleUI() {
     const { user } = useUser()
     const [open, setopen] = useState(false)
     const [loading, setloading] = useState(false)
-    const [users, setUsers] = useState<User[]>([]);
-    const [liveInterviews, setLiveInterviews] = useState<LiveInterview[]>([]);
-    const [loadingInterviews, setLoadingInterviews] = useState(true);
+    const [users, setUsers] = useState<User[]>([])
+    const [liveInterviews, setLiveInterviews] = useState<LiveInterview[]>([])
+    const [requestedinterviews, setrequestedinterviews] = useState<RequestedInterview[]>([])
+    const [loadingInterviews, setLoadingInterviews] = useState(true)
+    const [viewmeetings, setviewmeetings] = useState(false)
 
     const [formData, setFormData] = useState({
         title: "",
@@ -49,10 +51,10 @@ export default function InterviewScheduleUI() {
 
 
     //  Get all live interviews
-    const getallinterviews = async () => {
+    const getallinterviews = async (userId: string) => {
         setLoadingInterviews(true);
         try {
-            const snapshot = await getDocs(collection(db, "liveinterviews"));
+            const snapshot = await getDocs(query(collection(db, "liveinterviews"), where("userId", "==", userId), where('interviewerId', 'array-contains', user?.id)));
             const interviews = snapshot.docs.map(doc => (doc.data() as LiveInterview));
             setLiveInterviews(interviews);
         } catch (error) {
@@ -62,6 +64,19 @@ export default function InterviewScheduleUI() {
         }
     };
 
+    // get requested interviews
+    const getrequestinterviews = async () => {
+        setLoadingInterviews(true);
+        try {
+            const snapshot = await getDocs(query(collection(db, "requestedinterviews"), where("interviewerId", "==", user?.id)));
+            const interviews = snapshot.docs.map(doc => (doc.data() as RequestedInterview));
+            setrequestedinterviews(interviews);
+        } catch (error) {
+            console.error("Error fetching interviews:", error);
+        } finally {
+            setLoadingInterviews(false);
+        }
+    };
 
     // Function to create a new live interview
     const createLiveInterview = async () => {
@@ -126,7 +141,7 @@ export default function InterviewScheduleUI() {
         }
         finally {
             setloading(false)
-            getallinterviews()
+            getallinterviews(userId)
         }
     };
 
@@ -147,7 +162,7 @@ export default function InterviewScheduleUI() {
         }));
     };
 
-    const candidates = users.filter((u) => u.role === "candidate")
+    const candidates = users.filter((u) => u.role === "candidate" && requestedinterviews.some((interview) => interview.userId === u.id));
     const interviewers = users.filter((u) => u.role === "interviewer")
 
     const selectedInterviewers = interviewers.filter((i) =>
@@ -160,14 +175,19 @@ export default function InterviewScheduleUI() {
 
     useEffect(() => {
         getallusers()
-        getallinterviews()
+        getrequestinterviews()
     }, [user, client])
+
+    const viewResume = (resumeId: string) => {
+        const resumeUrl = `http://localhost:5173/resume/${resumeId}/view`;
+        window.open(resumeUrl, "_blank");
+    };
 
     return (
         <>
             <div className="container max-w-7xl mx-auto p-6 space-y-8">
                 <Custombreadcrumb breadCrumpPage={"Schedule"} breadCrumpItems={[{ label: "Dashboard", link: '/interviewer/dashboard' }]} />
-                
+
                 <div className="flex items-center justify-between">
                     {/* Header info  */}
 
@@ -325,22 +345,35 @@ export default function InterviewScheduleUI() {
                     </Dialog>
                 </div>
 
-                {/* LOADING STATE & MEETING CARDS */}
-                {loadingInterviews ? (
-                    <div className="flex justify-center items-center h-70 py-12">
-                        <Loader2Icon className="animate-spin w-6 h-6 text-gray-500" />
-                    </div>
-                ) : liveInterviews.length > 0 ? (
-                    <div className="spacey-4">
-                        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                            {liveInterviews.map((item, index) => (
-                                <MeetingCard key={index} liveinterview={item} />
-                            ))}
+                {requestedinterviews && requestedinterviews.map((item, index) => (
+                    <div className="border p-4 rounded-lg shadow-md bg-white" key={index}>
+                        <div className="p-1">
+                            <h3 className="text-lg font-bold">{item.userName}</h3>
+                            <p className="text-sm text-gray-600">Email: {item.userEmail}</p>
                         </div>
+
+                        <div className="mt-4 flex justify-end gap-5">
+                            <Button onClick={() => { getallinterviews(item.userId); setviewmeetings(!viewmeetings) }}>{loadingInterviews ? (<Loader2Icon className="animate-spin w-6 h-6 text-gray-500" />) : "View Meetings"}</Button>
+                            <Button variant="outline" onClick={() => viewResume(item.resume)}>View Resume</Button>
+                        </div>
+
+                        {viewmeetings ? (loadingInterviews ? (
+                            <div className="flex justify-center items-center h-70 py-12">
+                                <Loader2Icon className="animate-spin w-6 h-6 text-gray-500" />
+                            </div>
+                        ) : liveInterviews.length > 0 ? (
+                            <div className="space-y-4 py-6">
+                                <div className="grid gap-6 md:grid-cols-2">
+                                    {liveInterviews.map((item, index) => (
+                                        <MeetingCard key={index} liveinterview={item} />
+                                    ))}
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="text-center py-12 text-muted-foreground">No interviews scheduled</div>
+                        )) : null}
                     </div>
-                ) : (
-                    <div className="text-center py-12 text-muted-foreground">No interviews scheduled</div>
-                )}
+                ))}
             </div>
         </>
     )

@@ -268,7 +268,7 @@ export default function ExperienceForm({ enableNext, refreshData }: Formsectionp
                             title: '', companyName: '', city: '', state: '', startDate: '', endDate: '', workSummary: ''
                         })}>+ Add More Experience</Button>
 
-                        <Button type="submit" disabled={isSubmitting || loading || !isValid}>
+                        <Button type="submit" disabled={isSubmitting || loading}>
                             {loading ? <Loader className="animate-spin" /> : actions}
                         </Button>
                     </form>
