@@ -1,7 +1,7 @@
 import Container from "@/components/Container";
 import Marqueimg from "@/components/Marque-img";
 import { Button } from "@/components/ui/button";
-import { BookOpenCheck, Sparkles } from "lucide-react";
+import { ArrowRight, BookOpenCheck, Sparkles } from "lucide-react";
 import Marquee from "react-fast-marquee";
 import { Link } from "react-router-dom";
 import accordiondata from "./accordion-question.json"
@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 export default function Homepage() {
     const [activeFeed, setactiveFeed] = useState(0)
     return (
-        <div className="flex-col w-full pb-24">
+        <div className="flex-col w-full">
             <Container>
                 <div className="my-8">
                     <h2 className="text-3xl text-center md:text-left md:text-6xl">
@@ -116,27 +116,47 @@ export default function Homepage() {
                     </div>
                 </div>
 
-                <h2 className="text-2xl md:text-3xl">
-                    FAQs
-                </h2>
-                <Accordion type="single" collapsible className="space-y-6">
-                    {accordiondata.map((item, i) => (
-                        <AccordionItem value={item.question} key={i} className="border rounded-lg shadow-md">
-                            <AccordionTrigger onClick={() => setactiveFeed(item.id)}
-                                className={cn("px-5 py-4 flex items-center justify-between text-base rounded-t-lg transition-colors hover:no-underline cursor-pointer",
-                                    activeFeed === item.id ? "bg-gradient-to-r from-purple-50 to-blue-50" : "hover:bg-gray-50")}>
-                                {item.question}
-                            </AccordionTrigger>
-                            <AccordionContent className="px-5 py-6 bg-white rounded-b-lg space-y-5 shadow-inner flex">
-                                <BookOpenCheck className="inline mr-2 text-yellow-400 size-13 mb-0" />
-                                <div className="font-semibold text-gray-700">
-                                    {item.answer}
-                                </div>
-                            </AccordionContent>
-                        </AccordionItem>
-                    ))}
-                </Accordion>
+                <div className="w-full max-w-[800px] mx-auto">
+                    <h2 className="text-2xl md:text-3xl py-3 mt-30">
+                        FAQs
+                    </h2>
+                    <Accordion type="single" collapsible className="space-y-6">
+                        {accordiondata.map((item, i) => (
+                            <AccordionItem value={item.question} key={i} className="border rounded-lg shadow-md">
+                                <AccordionTrigger onClick={() => setactiveFeed(item.id)}
+                                    className={cn("px-5 py-4 flex items-center justify-between text-base rounded-t-lg transition-colors hover:no-underline cursor-pointer",
+                                        activeFeed === item.id ? "bg-gradient-to-r from-purple-50 to-blue-50" : "hover:bg-gray-50")}>
+                                    {item.question}
+                                </AccordionTrigger>
+                                <AccordionContent className="px-5 py-6 bg-white rounded-b-lg space-y-5 shadow-inner flex">
+                                    <BookOpenCheck className="inline mr-2 text-yellow-400 size-13 mb-0" />
+                                    <div className="font-semibold text-gray-700">
+                                        {item.answer}
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
+                </div>
             </Container>
+
+            <div>
+                <section className="z-50 bg-gray-50">
+                    <div className="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 lg:px-12">
+                        <h1 className="mb-4 text-3xl font-bold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
+                            AI-Powered Mock Interviews
+                        </h1>
+                        <p className="mb-8 text-lg font-normal text-gray-500 lg:text-xl sm:px-16 xl:px-48 dark:text-gray-400">
+                            Get ready for your dream job with our AI-driven interview platform. Create stunning resumes and have live video calls with HR professionals.
+                        </p>
+                        <div className="flex flex-col mb-8 lg:mb-16 space-y-4 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-4">
+                            <Link to="/sign-in" className="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-white rounded-lg bg-primary hover:bg-primary-dark">
+                                Start Your Journey Today <ArrowRight className="ms-3" />
+                            </Link>
+                        </div>
+                    </div>
+                </section>
+            </div>
         </div>
     )
 }
