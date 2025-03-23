@@ -2,7 +2,7 @@ import { FilePlusIcon, Loader2, LoaderIcon, Upload } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { useEffect, useState } from "react";
-import { useAuth } from "@clerk/clerk-react";
+import { useAuth, useUser } from "@clerk/clerk-react";
 import { RequestedInterview, Resume, User } from "@/types";
 import { addDoc, collection, getDocs, query, serverTimestamp, where } from "firebase/firestore";
 import { db } from "@/config/firebase.config";
@@ -14,18 +14,39 @@ import { toast } from "sonner";
 export default function CandidateRequestForm({ onClose }: { onClose: () => void }) {
     const [loading, setloading] = useState(false)
     const { userId } = useAuth()
+    const { user } = useUser();
     const [userresume, setuserresume] = useState<Resume[]>([]);
     const [interviewer, setinterviewer] = useState<User[]>([])
     const [loadingresumes, setloadingresumes] = useState(false)
     const [loadinginterviewer, setloadinginterviewer] = useState(false)
     const [selectedResume, setSelectedResume] = useState<string>('');
+    const [uploadingresume, setuploadingresume] = useState(false)
 
     const [formData, setFormData] = useState({
         name: "",
         email: "",
         interviewerId: "",
-        uploadedfile: null as File | null
+        uploadedfile: null as File | string | null,
     });
+
+    const handlefileupload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append("resume", file);
+
+        setuploadingresume(true)
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/uploadResume`, {
+            method: "POST",
+            body: formData,
+        });
+
+        const data = await response.json();
+        console.log("Uploaded File URL:", data.url);
+        setFormData((prev) => ({ ...prev, uploadedfile: data.url }));
+        setuploadingresume(false)
+    };
 
     //get all resumes
     const getallresumes = async () => {
@@ -103,7 +124,8 @@ export default function CandidateRequestForm({ onClose }: { onClose: () => void 
                 interviewerId,
                 userName: name,
                 userEmail: email,
-                resume: selectedResume || (uploadedfile ? uploadedfile.name : null),
+                // resume: selectedResume || (uploadedfile ? uploadedfile.name : null),
+                resume: formData.uploadedfile || selectedResume,
                 created_at: serverTimestamp(),
                 updated_at: serverTimestamp()
             });
@@ -137,14 +159,14 @@ export default function CandidateRequestForm({ onClose }: { onClose: () => void 
     }, [])
 
     useEffect(() => {
-        if (userresume.length > 0) {
+        if (user) {
             setFormData((prev) => ({
                 ...prev,
-                name: userresume[0]?.firstName + " " + userresume[0]?.lastName || "",
-                email: userresume[0]?.email || "",
+                name: `${user?.firstName || ""} ${user?.lastName || ""}`.trim(),
+                email: user?.primaryEmailAddress?.emailAddress || "",
             }));
         }
-    }, [userresume]);
+    }, [user]);
 
     return (
         <>
@@ -154,7 +176,7 @@ export default function CandidateRequestForm({ onClose }: { onClose: () => void 
                     <LoaderIcon className="w-10 h-10 min-w-10 min-h-10 animate-spin" />
                 </div>
             ) : (
-                <div className="space-y-4 p-3">
+                <div className="space-y-5 p-3">
 
                     {/* User Name */}
                     <div className="space-y-2">
@@ -177,7 +199,7 @@ export default function CandidateRequestForm({ onClose }: { onClose: () => void 
                     </div>
 
                     {/* User Resume Selection */}
-                    <div className="space-y-2">
+                    {!formData.uploadedfile && (<div className="space-y-2">
                         <label className="text-sm font-medium">Select Resume</label>
                         {userresume.length > 0 ? (
                             <Select value={selectedResume} onValueChange={(id) => setSelectedResume(id)}>
@@ -206,20 +228,50 @@ export default function CandidateRequestForm({ onClose }: { onClose: () => void 
                             </div>
                         )}
                     </div>
+                    )}
 
                     {/* OR Upload a new resume */}
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium">OR Upload a New Resume:</label>
-                        <div className="flex items-center gap-2 border border-gray-300 rounded-lg px-4 py-2 cursor-pointer hover:bg-gray-100 transition">
-                            <Upload className="w-5 h-5 text-blue-600" />
-                            <Input
-                                type="file"
-                                accept=".pdf,.doc,.docx"
-                                className="flex-1"
-                                onChange={(e) => setFormData({ ...formData, uploadedfile: e.target.files?.[0] || null })}
-                            />
+                    {!formData.uploadedfile && (
+                        <div className="space-y-2">
+                            {!uploadingresume && (
+                                <>
+                                    <label className="text-sm font-medium">OR Upload a New Resume:</label>
+                                    <div className="flex items-center gap-2 border border-gray-300 rounded-lg px-4 py-2 cursor-pointer hover:bg-gray-100 transition">
+                                        <Upload className="w-5 h-5 text-blue-600" />
+                                        <Input
+                                            type="file"
+                                            accept=".pdf,.doc,.docx"
+                                            className="flex-1"
+                                            disabled={uploadingresume}
+                                            onChange={handlefileupload}
+                                        />
+                                    </div>
+                                </>
+                            )}
+                            {uploadingresume && (
+                                <p className="text-blue-600 text-sm mt-2 flex justify-center"><Loader2 className="animate-spin" /></p>
+                            )}
+                        </div>)}
+
+                    {/* View uploaded resume */}
+                    {typeof formData.uploadedfile === "string" && formData.uploadedfile && (
+                        <div className="flex flex-col items-center gap-4">
+                            <button
+                                onClick={() => setFormData((prev) => ({ ...prev, uploadedfile: null }))}
+                                className="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-red-600 hover:scale-105 transition-all duration-300 ease-in-out"
+                            >
+                                ❌ Remove Resume
+                            </button>
+                            <a
+                                href={formData.uploadedfile}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-block bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold py-2 px-6 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 ease-in-out"
+                            >
+                                📄 View Uploaded Resume
+                            </a>
                         </div>
-                    </div>
+                    )}
 
                     {/* Interviewers Selection */}
                     <div className="space-y-2">
@@ -242,11 +294,10 @@ export default function CandidateRequestForm({ onClose }: { onClose: () => void 
 
                     <div className="flex justify-end gap-3">
                         <Button variant={"outline"} onClick={onClose}>Cancel</Button>
-                        <Button onClick={handlesubmit} disabled={loading}>{loading ? (
+                        <Button onClick={handlesubmit} disabled={loading || uploadingresume}>{loading ? (
                             <Loader2 className="animate-spin h-5 w-5" />
                         ) : "Submit Request"}</Button>
                     </div>
-
                 </div>
             )}
         </>

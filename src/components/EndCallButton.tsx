@@ -15,6 +15,31 @@ export default function EndCallButton() {
 
     const [liveInterviewDoc, setLiveInterviewDoc] = useState<LiveInterview | null>(null)
 
+    if (!call) return null
+
+    const meetingOwner = localParticipant?.userId === call.state.createdBy?.id
+    if (!meetingOwner) return null
+
+    const endcall = async () => {
+        try {
+            await call.endCall()
+
+            // Update database as status completed
+            // await updateDoc(doc(db, "liveinterviews", liveInterviewDoc.id), {
+            //     status: "completed",
+            //     updated_at: serverTimestamp(),
+            // })
+
+            navigate("/")
+            toast.success("Meeting Ended for everyone")
+        } catch (error) {
+            console.log(error)
+            toast.error("Failed to end meeting")
+        }
+    }
+
+    //  
+    
     useEffect(() => {
         if (!call) return
 
@@ -37,28 +62,7 @@ export default function EndCallButton() {
         getdata()
     }, [call])
 
-    if (!call || !liveInterviewDoc) return null
-
-    const meetingOwner = localParticipant?.userId === call.state.createdBy?.id
-    if (!meetingOwner) return null
-
-    const endcall = async () => {
-        try {
-            await call.endCall()
-
-            // Update database as status completed
-            await updateDoc(doc(db, "liveinterviews", liveInterviewDoc.id), {
-                status: "completed",
-                updated_at: serverTimestamp(),
-            })
-
-            navigate("/")
-            toast.success("Meeting Ended for everyone")
-        } catch (error) {
-            console.log(error)
-            toast.error("Failed to end meeting")
-        }
-    }
+    // if (!liveInterviewDoc) return null 
 
     return <Button variant={"destructive"} onClick={endcall}>End Call</Button>
 }

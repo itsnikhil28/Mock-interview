@@ -36,11 +36,6 @@ export const TIME_SLOTS = [
     "14:00",
     "14:30",
     "15:00",
-    "15:30",
-    "16:00",
-    "16:30",
-    "17:00",
-    "23:00"
 ];
 
 export const QUICK_ACTIONS_FOR_INTERVIEW = [

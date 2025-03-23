@@ -38,14 +38,14 @@ export default function Service() {
                                 </p>
                             </div>
                             <div className="block rounded-xl border bg-white border-gray-200 p-8 shadow-xl">
-                                <FileText className='h-8 w-8' />
+                                <FileText className='h-8 w-8 mx-auto' />
                                 <h2 className="mt-4 text-xl font-bold text-black">Build Your Resume</h2>
                                 <p className="mt-1 text-sm text-gray-600">
                                     Create a professional resume with AI suggestions tailored to your field.
                                 </p>
                             </div>
                             <div className="block rounded-xl border bg-white border-gray-200 p-8 shadow-xl">
-                                <Users className='h-8 w-8' />
+                                <Users className='h-8 w-8 mx-auto' />
                                 <h2 className="mt-4 text-xl font-bold text-black">Live Video Call with HR</h2>
                                 <p className="mt-1 text-sm text-gray-600">
                                     Connect with real HR professionals to get interview feedback and insights.

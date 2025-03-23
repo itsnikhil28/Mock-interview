@@ -8,9 +8,11 @@ import accordiondata from "./accordion-question.json"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@clerk/clerk-react";
 
 export default function Homepage() {
     const [activeFeed, setactiveFeed] = useState(0)
+    const { userId } = useAuth()
     return (
         <div className="flex-col w-full">
             <Container>
@@ -150,8 +152,8 @@ export default function Homepage() {
                             Get ready for your dream job with our AI-driven interview platform. Create stunning resumes and have live video calls with HR professionals.
                         </p>
                         <div className="flex flex-col mb-8 lg:mb-16 space-y-4 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-4">
-                            <Link to="/sign-in" className="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-white rounded-lg bg-primary hover:bg-primary-dark">
-                                Start Your Journey Today <ArrowRight className="ms-3" />
+                            <Link to={userId ? "/generate" :"/sign-in"} className="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-white rounded-lg bg-primary hover:bg-primary-dark">
+                                {userId ? "Start Now" : "Start Your Journey Today"} <ArrowRight className="ms-3" />
                             </Link>
                         </div>
                     </div>

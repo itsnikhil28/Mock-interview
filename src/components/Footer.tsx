@@ -48,7 +48,7 @@ export default function Footer() {
             <Container>
                 <div className="text-center md:text-left grid grid-cols-1 md:grid-cols-3 gap-8">
                     {/* First Column: Links */}
-                    <div>
+                    <div className='text-center'>
                         <h3 className="font-bold text-lg mb-4">Quick Links</h3>
                         <ul className="space-y-2">
                             {MainRoutes.map((item, i) => (

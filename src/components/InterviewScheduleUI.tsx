@@ -24,10 +24,11 @@ export default function InterviewScheduleUI() {
     const [open, setopen] = useState(false)
     const [loading, setloading] = useState(false)
     const [users, setUsers] = useState<User[]>([])
-    const [liveInterviews, setLiveInterviews] = useState<LiveInterview[]>([])
+    const [liveInterviewsMap, setLiveInterviewsMap] = useState<{ [key: string]: LiveInterview[] }>({});
     const [requestedinterviews, setrequestedinterviews] = useState<RequestedInterview[]>([])
-    const [loadingInterviews, setLoadingInterviews] = useState(true)
-    const [viewmeetings, setviewmeetings] = useState(false)
+    const [viewMeetingsMap, setViewMeetingsMap] = useState<{ [key: string]: boolean }>({});
+    const [loadingInterviewsMap, setLoadingInterviewsMap] = useState<{ [key: string]: boolean }>({});
+    const [LoadingInterviews, setLoadingInterviews] = useState(false)
 
     const [formData, setFormData] = useState({
         title: "",
@@ -52,15 +53,20 @@ export default function InterviewScheduleUI() {
 
     //  Get all live interviews
     const getallinterviews = async (userId: string) => {
-        setLoadingInterviews(true);
+        setLoadingInterviewsMap(prev => ({ ...prev, [userId]: true }));
+
         try {
-            const snapshot = await getDocs(query(collection(db, "liveinterviews"), where("userId", "==", userId), where('interviewerId', 'array-contains', user?.id)));
+            const snapshot = await getDocs(
+                query(collection(db, "liveinterviews"), where("userId", "==", userId), where("interviewerId", "array-contains", user?.id))
+            );
             const interviews = snapshot.docs.map(doc => (doc.data() as LiveInterview));
-            setLiveInterviews(interviews);
+
+            setLiveInterviewsMap(prev => ({ ...prev, [userId]: interviews }));
+            setViewMeetingsMap(prev => ({ ...prev, [userId]: !prev[userId] }));
         } catch (error) {
             console.error("Error fetching interviews:", error);
         } finally {
-            setLoadingInterviews(false);
+            setLoadingInterviewsMap(prev => ({ ...prev, [userId]: false }));
         }
     };
 
@@ -179,8 +185,12 @@ export default function InterviewScheduleUI() {
     }, [user, client])
 
     const viewResume = (resumeId: string) => {
-        const resumeUrl = `http://localhost:5173/resume/${resumeId}/view`;
-        window.open(resumeUrl, "_blank");
+        if (resumeId.startsWith("https://res.cloudinary.com/")) {
+            window.open(resumeId, "_blank");
+        } else {
+            const resumeUrl = `/resume/${resumeId}/view`;
+            window.open(resumeUrl, "_blank");
+        }
     };
 
     return (
@@ -345,6 +355,17 @@ export default function InterviewScheduleUI() {
                     </Dialog>
                 </div>
 
+                {LoadingInterviews ? (
+                    <div className="h-[30vh] md:h-[50vh] flex justify-center items-center">
+                        <Loader2Icon className="animate-spin w-8 h-8 text-gray-500" />
+                    </div>
+                ) : requestedinterviews.length === 0 ? (
+                    <div className="h-[30vh] md:h-[50vh] flex justify-center items-center">
+                        <p className="text-gray-500 text-sm">No one has requested yet</p>
+                    </div>
+                ) : null}
+
+
                 {requestedinterviews && requestedinterviews.map((item, index) => (
                     <div className="border p-4 rounded-lg shadow-md bg-white" key={index}>
                         <div className="p-1">
@@ -353,25 +374,32 @@ export default function InterviewScheduleUI() {
                         </div>
 
                         <div className="mt-4 flex justify-end gap-5">
-                            <Button onClick={() => { getallinterviews(item.userId); setviewmeetings(!viewmeetings) }}>{loadingInterviews ? (<Loader2Icon className="animate-spin w-6 h-6 text-gray-500" />) : "View Meetings"}</Button>
+                            <Button onClick={() => getallinterviews(item.userId)}>
+                                {loadingInterviewsMap[item.userId] ? (
+                                    <Loader2Icon className="animate-spin w-6 h-6 text-gray-500" />
+                                ) : viewMeetingsMap[item.userId] ? "Hide Meetings" : "View Meetings"}
+                            </Button>
                             <Button variant="outline" onClick={() => viewResume(item.resume)}>View Resume</Button>
                         </div>
 
-                        {viewmeetings ? (loadingInterviews ? (
-                            <div className="flex justify-center items-center h-70 py-12">
-                                <Loader2Icon className="animate-spin w-6 h-6 text-gray-500" />
-                            </div>
-                        ) : liveInterviews.length > 0 ? (
-                            <div className="space-y-4 py-6">
-                                <div className="grid gap-6 md:grid-cols-2">
-                                    {liveInterviews.map((item, index) => (
-                                        <MeetingCard key={index} liveinterview={item} />
-                                    ))}
+                        {/* Show meetings only for the selected user */}
+                        {viewMeetingsMap[item.userId] && (
+                            loadingInterviewsMap[item.userId] ? (
+                                <div className="flex justify-center items-center h-70 py-12">
+                                    <Loader2Icon className="animate-spin w-6 h-6 text-gray-500" />
                                 </div>
-                            </div>
-                        ) : (
-                            <div className="text-center py-12 text-muted-foreground">No interviews scheduled</div>
-                        )) : null}
+                            ) : liveInterviewsMap[item.userId] && liveInterviewsMap[item.userId].length > 0 ? (
+                                <div className="space-y-4 py-6">
+                                    <div className="grid gap-6 md:grid-cols-2">
+                                        {liveInterviewsMap[item.userId].map((meeting, index) => (
+                                            <MeetingCard key={index} liveinterview={meeting} />
+                                        ))}
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="text-center py-12 text-muted-foreground">No interviews scheduled</div>
+                            )
+                        )}
                     </div>
                 ))}
             </div>
