@@ -2,7 +2,7 @@ import Container from "@/components/Container";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowRightIcon, GithubIcon, LinkedinIcon, MailIcon, TwitterIcon } from "lucide-react";
+import { ArrowRightIcon, GithubIcon, LinkedinIcon, TwitterIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function Aboutus() {

@@ -9,10 +9,12 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@clerk/clerk-react";
+import { useUser } from "@/provider/User-Provider";
 
 export default function Homepage() {
     const [activeFeed, setactiveFeed] = useState(0)
     const { userId } = useAuth()
+    const { role } = useUser()
     return (
         <div className="flex-col w-full">
             <Container>
@@ -56,20 +58,18 @@ export default function Homepage() {
                         className="w-full h-full object-cover"
                     />
 
-                    {/* <div className="absolute top-4 left-4 px-4 py-2 rounded-md bg-white/40 backdrop-blur-md">
-                        Inteviews Copilot&copy;
-                    </div> */}
-
                     <div className="hidden md:block absolute w-80 bottom-4 right-4 px-4 py-2 rounded-md bg-white/60 backdrop-blur-md">
                         <h2 className="text-neutral-800 font-semibold">Developer</h2>
                         <p className="text-sm text-neutral-500">
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam
-                            distinctio natus, quos voluptatibus magni sapiente.
+                            Elevate your career with AI-powered interview preparation.
+                            Get real-time insights and boost your confidence to land your dream job.
                         </p>
 
-                        <Button className="mt-3">
-                            Generate <Sparkles />
-                        </Button>
+                        <Link to={userId ? "/generate" : "/sign-in"} className="w-full">
+                            <Button className="mt-3">
+                                Generate <Sparkles />
+                            </Button>
+                        </Link>
                     </div>
                 </div>
             </Container>
@@ -110,7 +110,7 @@ export default function Homepage() {
                             today&apos;s competitive job market.
                         </p>
 
-                        <Link to={"/generate"} className="w-full">
+                        <Link to={userId ? "/generate" : "/sign-in"} className="w-full">
                             <Button className="w-3/4">
                                 Generate <Sparkles className="ml-2" />
                             </Button>
@@ -152,13 +152,30 @@ export default function Homepage() {
                             Get ready for your dream job with our AI-driven interview platform. Create stunning resumes and have live video calls with HR professionals.
                         </p>
                         <div className="flex flex-col mb-8 lg:mb-16 space-y-4 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-4">
-                            <Link to={userId ? "/generate" :"/sign-in"} className="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-white rounded-lg bg-primary hover:bg-primary-dark">
+                            <Link to={userId ? "/generate" : "/sign-in"} className="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-white rounded-lg bg-primary hover:bg-primary-dark">
                                 {userId ? "Start Now" : "Start Your Journey Today"} <ArrowRight className="ms-3" />
                             </Link>
                         </div>
                     </div>
                 </section>
             </div>
+
+            {/* Request to become an interviewer (Only for candidates) */}
+            {userId && role === "candidate" && (
+                <section className="z-50">
+                    <div className="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 lg:px-12">
+                        <h1 className="mb-4 text-xl font-bold tracking-tight leading-none text-gray-900 md:text-3xl lg:text-4xl dark:text-white">
+                            Are You an Interviewer at a Company?
+                        </h1>
+                        <p className="mb-8 text-lg font-normal text-gray-500 sm:px-16 xl:px-48 dark:text-gray-400">
+                            If you conduct interviews in your organization and want to leverage your expertise, apply to become a professional interviewer on our platform.
+                        </p>
+                        <Link to={'/apply-as-interviewer'}>
+                            <Button className="inline-flex justify-center items-center py-5 px-5 text-base font-medium text-center text-white rounded-lg bg-primary hover:bg-primary-dark">Apply as an Interviewer</Button>
+                        </Link>
+                    </div>
+                </section>
+            )}
         </div>
     )
 }

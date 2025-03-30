@@ -19,7 +19,6 @@ export default function CandidateScheduledInterview() {
             const snapshot = await getDocs(query(collection(db, "liveinterviews"), where("userId", "==", userId)));
             const interviewers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }) as LiveInterview);
             setinterviews(interviewers);
-            console.log(interviewers)
         } catch (error) {
             console.error("Error fetching interviews:", error);
         } finally {

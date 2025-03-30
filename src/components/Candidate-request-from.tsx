@@ -36,16 +36,29 @@ export default function CandidateRequestForm({ onClose }: { onClose: () => void 
         const formData = new FormData();
         formData.append("resume", file);
 
-        setuploadingresume(true)
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/uploadResume`, {
-            method: "POST",
-            body: formData,
-        });
+        setuploadingresume(true);
 
-        const data = await response.json();
-        console.log("Uploaded File URL:", data.url);
-        setFormData((prev) => ({ ...prev, uploadedfile: data.url }));
-        setuploadingresume(false)
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/uploadResume`, {
+                method: "POST",
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to upload file");
+            }
+
+            const data = await response.json();
+            console.log("Uploaded File URL:", data.url);
+
+            setFormData((prev) => ({ ...prev, uploadedfile: data.url }));
+            toast.success("Resume uploaded successfully!");
+        } catch (error) {
+            console.error("Error uploading file:", error);
+            toast.error("Failed to upload resume. Please try again.");
+        } finally {
+            setuploadingresume(false);
+        }
     };
 
     //get all resumes
@@ -251,7 +264,8 @@ export default function CandidateRequestForm({ onClose }: { onClose: () => void 
                             {uploadingresume && (
                                 <p className="text-blue-600 text-sm mt-2 flex justify-center"><Loader2 className="animate-spin" /></p>
                             )}
-                        </div>)}
+                        </div>
+                    )}
 
                     {/* View uploaded resume */}
                     {typeof formData.uploadedfile === "string" && formData.uploadedfile && (

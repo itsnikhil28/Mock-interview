@@ -110,6 +110,19 @@ export interface LiveInterview {
     updated_at: Timestamp
 }
 
+export interface InterviewerApplyRequest {
+    id: string
+    userId : string
+    name: string
+    company: string
+    experience: string
+    linkedin: string
+    message: string
+    document: string
+    created_at: Timestamp
+    updated_at: Timestamp
+}
+
 export interface comments {
     id: string
     content: string

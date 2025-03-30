@@ -1,0 +1,17 @@
+[
+    {
+        "id": 1,
+        "question": "How long does approval take?",
+        "answer": "3-5 business days."
+    },
+    {
+        "id": 2,
+        "question": "Do I need prior interviewing experience?",
+        "answer": "Yes, at least 3 years in a hiring role."
+    },
+    {
+        "id": 3,
+        "question": "Is this a paid role?",
+        "answer": "Yes, interviewers receive compensation based on the number of interviews conducted."
+    }
+]

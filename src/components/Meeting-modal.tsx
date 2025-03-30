@@ -5,9 +5,16 @@ import { Button } from "./ui/button"
 import { useNavigate } from "react-router-dom"
 import { useStreamVideoClient } from "@stream-io/video-react-sdk"
 import { toast } from "sonner"
-import { Loader2 } from "lucide-react"
+import { Loader2, XIcon } from "lucide-react"
 import CandidateRequestForm from "./Candidate-request-from"
-import { useUser } from "@clerk/clerk-react"
+import { useUser } from "@clerk/clerk-react";
+import { useUser as userRole } from "@/provider/User-Provider";
+import { collection, getDocs } from "firebase/firestore"
+import { db } from "@/config/firebase.config"
+import { User } from "@/types"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
+import UserInfo from "./UserInfo"
+
 
 interface Meetingmodalprops {
     isOpen: boolean
@@ -19,10 +26,48 @@ interface Meetingmodalprops {
 
 export default function Meetingmodal({ isOpen, onClose, title, isJoinMeeting, interviewrequest }: Meetingmodalprops) {
     const [meetingUrl, setmeetingUrl] = useState("")
+    const [meetingid, setmeetingid] = useState("")
     const [loading, setLoading] = useState(false);
+    const [users, setUsers] = useState<User[]>([])
     const navigate = useNavigate()
     const client = useStreamVideoClient()
     const { user } = useUser()
+    const { role } = userRole();
+    const [invitemodal, setinvitemodal] = useState(false)
+    const [formData, setFormData] = useState({
+        membersid: user?.id ? [user.id] : [],
+    });
+
+    const addmember = (memberid: string) => {
+        if (!formData.membersid.includes(memberid)) {
+            setFormData((prev) => ({
+                ...prev,
+                membersid: [...prev.membersid, memberid],
+            }));
+        }
+    };
+
+    const removemember = (memberid: string) => {
+        setFormData((prev) => ({
+            ...prev,
+            membersid: prev.membersid.filter((id) => id !== memberid),
+        }));
+    };
+
+    const selectedmember = users.filter((i) =>
+        formData.membersid.includes(i.id)
+    );
+
+    // Get all users
+    const getallusers = async () => {
+        try {
+            const usersSnapshot = await getDocs(collection(db, "users"));
+            const usersList = usersSnapshot.docs.map(doc => ((doc.data() as User))).filter(userData => userData.id !== user?.id);;
+            setUsers(usersList);
+        } catch (error) {
+            console.error("Error fetching users:", error);
+        }
+    };
 
     const createInstanceMeeting = async () => {
         if (!client) return
@@ -41,13 +86,65 @@ export default function Meetingmodal({ isOpen, onClose, title, isJoinMeeting, in
                 }
             })
 
-            navigate(`/meeting/${call.id}`)
+            setinvitemodal(true)
+            getallusers()
+            setmeetingid(call.id)
+
             toast.success("Meeting Created")
         } catch (error) {
             console.error(error)
             toast.error("Failed to create Meeting")
         } finally {
             setLoading(false);
+        }
+    }
+
+    const sendemail = () => {
+        setLoading(true)
+
+        if (!meetingid.trim()) {
+            toast.error("MeetingId is missing");
+            return;
+        }
+
+        const recipients = selectedmember.map(member => ({
+            name: member.name,
+            email: member.email
+        }));
+
+        const payload = {
+            recipients: recipients,
+            meetingId: meetingid,
+            meetingUrl: `${import.meta.env.VITE_MAIN_WEBSITE_URL}/meeting/${meetingid}`,
+        };
+
+        try {
+            fetch(`${import.meta.env.VITE_API_URL}/api/send-invite-email`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            })
+                .then(res => res.json())
+                .then(res => {
+                    if (res.success) {
+                        navigate(`/meeting/${meetingid}`)
+                        toast.success(res.message);
+                    } else {
+                        toast.error(res.message);
+                    }
+                })
+                .catch(err => {
+                    console.error("Error sending email:", err);
+                    toast.error("Something went wrong when sending mail.");
+                })
+                .finally(() => {
+                    setLoading(false)
+                    setmeetingid("")
+                });;
+        } catch (error) {
+            toast.error("Something went wrong when sending mail..")
         }
     }
 
@@ -66,27 +163,42 @@ export default function Meetingmodal({ isOpen, onClose, title, isJoinMeeting, in
     }
 
     const joinMeeting = async (callid: string) => {
-        if (!client) return toast.error("Failed to join Meeting.. Please try again...")
+        if (!client) return toast.error("Failed to join Meeting.. Please try again...");
 
         if (!user) {
             toast.error("User not authenticated");
             return;
         }
 
-        const call = await getcall(callid)
+        const call = await getcall(callid);
 
-        if (call) {
-            console.log("hello")
-            await call.updateCallMembers({
-                update_members: [{ user_id: user.id, role: "guest" }],
-            });
-            console.log("hello done")
+        if (!call) {
+            toast.error("Meeting not found");
+            return;
         }
 
-        setLoading(true)
-        navigate(`/meeting/${callid}`)
-        setLoading(false)
-    }
+        const response = await call.queryMembers({});
+        const members = response.members || [];
+
+        const candidateCount = members.filter(member => member.role === "candidate").length;
+
+        const isInterviewer = role === "interviewer";
+
+        if (!isInterviewer && candidateCount >= 1) {
+            toast.error("Only one candidate can join the meeting.");
+            return;
+        }
+
+        await call.updateCallMembers({
+            update_members: [{ user_id: user.id, role: isInterviewer ? "interviewer" : "candidate" }],
+        });
+
+        toast.success("Joined the meeting successfully");
+
+        setLoading(true);
+        navigate(`/meeting/${callid}`);
+        setLoading(false);
+    };
 
     const handlestart = () => {
         if (isJoinMeeting) {
@@ -103,35 +215,94 @@ export default function Meetingmodal({ isOpen, onClose, title, isJoinMeeting, in
         // onClose()
     }
     return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>{title}</DialogTitle>
-                    <DialogDescription>
-                        {null}
-                    </DialogDescription>
-                    {interviewrequest ? (
-                        <div className="space-y-4 pt-4">
+        <>
+            <Dialog open={isOpen} onOpenChange={onClose}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>{title}</DialogTitle>
+                        <DialogDescription>
+                            {null}
+                        </DialogDescription>
+                        {interviewrequest ? (
+                            <div className="space-y-4 pt-4">
 
-                            {/* Form for Interview Request */}
-                            <CandidateRequestForm onClose={onClose} />
-                        </div>
-                    ) : (
-                        <div className="space-y-4 pt-4">
-                            {isJoinMeeting && (
-                                <Input placeholder="Paste Meeting link here..." value={meetingUrl} onChange={(e) => setmeetingUrl(e.target.value)} />
-                            )}
-
-                            <div className="flex justify-end gap-3">
-                                <Button variant={"outline"} onClick={onClose}>Cancel</Button>
-                                <Button onClick={handlestart} disabled={isJoinMeeting && !meetingUrl.trim()}>{loading ? (
-                                    <Loader2 className="animate-spin h-5 w-5" />
-                                ) : isJoinMeeting ? "Join Meeting" : "Start Meeting"}</Button>
+                                {/* Form for Interview Request */}
+                                <CandidateRequestForm onClose={onClose} />
                             </div>
-                        </div>
-                    )}
-                </DialogHeader>
-            </DialogContent>
-        </Dialog>
+                        ) : (
+                            <div className="space-y-4 pt-4">
+                                {isJoinMeeting && (
+                                    <Input placeholder="Paste Meeting link here..." value={meetingUrl} onChange={(e) => setmeetingUrl(e.target.value)} />
+                                )}
+
+                                <div className="flex justify-end gap-3">
+                                    <Button variant={"outline"} onClick={onClose}>Cancel</Button>
+                                    <Button onClick={handlestart} disabled={isJoinMeeting && !meetingUrl.trim()}>{loading ? (
+                                        <Loader2 className="animate-spin h-5 w-5" />
+                                    ) : isJoinMeeting ? "Join Meeting" : "Start Meeting"}</Button>
+                                </div>
+                            </div>
+                        )}
+                    </DialogHeader>
+                </DialogContent>
+            </Dialog>
+
+            {invitemodal && (
+                <Dialog open={invitemodal} onOpenChange={() => setinvitemodal(false)}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Invite Member To Meeting</DialogTitle>
+                            <DialogDescription>
+                                {null}
+                            </DialogDescription>
+                            <div className="space-y-4 pt-4">
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium">Select Members</label>
+                                    <div className="flex flex-wrap gap-2 my-2">
+                                        {selectedmember.map((member) => (
+                                            <div
+                                                key={member.id}
+                                                className="inline-flex items-center gap-2 bg-secondary px-2 py-1 rounded-md text-sm"
+                                            >
+                                                <UserInfo user={member} />
+                                                {member.id !== user?.id && (
+                                                    <button
+                                                        onClick={() => removemember(member.id)}
+                                                        className="hover:text-destructive transition-colors"
+                                                    >
+                                                        <XIcon className="h-4 w-4" />
+                                                    </button>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    {users.length > 0 && (
+                                        <Select onValueChange={addmember}>
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Add Members" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {users.map((item, index) => (
+                                                    <SelectItem key={index} value={`${item.id}`}>
+                                                        <UserInfo user={item} />
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    )}
+                                </div>
+
+                                <div className="flex justify-end gap-3">
+                                    <Button variant={"outline"} onClick={() => setinvitemodal(false)}>Cancel</Button>
+                                    <Button onClick={sendemail} disabled={loading}>
+                                        {loading ? (<Loader2 className="animate-spin h-5 w-5" />) : "Send Invite"}
+                                    </Button>
+                                </div>
+                            </div>
+                        </DialogHeader>
+                    </DialogContent>
+                </Dialog>
+            )}
+        </>
     )
 }

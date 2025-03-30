@@ -84,6 +84,56 @@ export default function InterviewScheduleUI() {
         }
     };
 
+    // scheduled email
+    const sendscheduledemail = (startTime: number, meetingId: string, userId: string) => {
+        toast.success("Meeting scheduled! Sending email for next steps and tips.")
+
+        if (!meetingId.trim()) {
+            toast.error("MeetingId is missing");
+            return;
+        }
+
+        const user = users.filter((u) => u.id === userId)[0]
+
+        const interviewers = selectedInterviewers.map(member => ({
+            name: member.name,
+            email: member.email
+        }));
+
+        const payload = {
+            title: formData.title,
+            description: formData.description,
+            startTime: startTime,
+            user: user,
+            meetingUrl: `${import.meta.env.VITE_MAIN_WEBSITE_URL}/meeting/${meetingId}`,
+            interviewers: interviewers,
+        };
+
+        try {
+            fetch(`${import.meta.env.VITE_API_URL}/api/send-scheduled-email`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            })
+                .then(res => res.json())
+                .then(res => {
+                    if (res.success) {
+                        toast.success(res.message);
+                    } else {
+                        toast.error(res.message);
+                    }
+                })
+                .catch(err => {
+                    console.error("Error sending email:", err);
+                    toast.error("Something went wrong when sending mail.");
+                })
+        } catch (error) {
+            toast.error("Something went wrong when sending mail..")
+        }
+    }
+
     // Function to create a new live interview
     const createLiveInterview = async () => {
         setloading(true)
@@ -134,6 +184,8 @@ export default function InterviewScheduleUI() {
 
             toast.success("Meeting scheduled Successfully")
             setopen(false)
+
+            sendscheduledemail(meetingDate.getTime(), id, userId)
 
             setFormData((prev) => ({
                 ...prev,

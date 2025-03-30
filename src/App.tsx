@@ -24,6 +24,7 @@ import MeetingPage from './Routes/Protected/Live-interview/Meeting-Page'
 import RecordingPage from './Routes/Protected/Live-interview/Recording-Page'
 import SchedulePage from './Routes/Protected/Live-interview/SchedulePage'
 import CandidateScheduledInterview from './Routes/Protected/Live-interview/Candidate-scheduled-interview'
+import InterviewerApply from './Routes/Main/InterviewerApply'
 
 function App() {
     const router = createBrowserRouter([
@@ -44,6 +45,10 @@ function App() {
                 {
                     path: '/about-us',
                     element: <Aboutus />
+                },
+                {
+                    path: '/apply-as-interviewer',
+                    element: <InterviewerApply />
                 }
             ]
         },
