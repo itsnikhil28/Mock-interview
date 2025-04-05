@@ -15,7 +15,6 @@ import { User } from "@/types"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
 import UserInfo from "./UserInfo"
 
-
 interface Meetingmodalprops {
     isOpen: boolean
     onClose: () => void
@@ -90,7 +89,7 @@ export default function Meetingmodal({ isOpen, onClose, title, isJoinMeeting, in
                 title: "Instant Meeting",
                 description: "Instant Meeting",
                 interviewerId: [user?.id],
-                startTime: serverTimestamp(),
+                startTime: new Date().getTime(),
                 status: "upcoming",
                 streamCallId: id,
                 created_at: serverTimestamp(),

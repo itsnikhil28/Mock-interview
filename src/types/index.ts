@@ -132,9 +132,9 @@ export interface MeetingQuestions {
     updated_at: Timestamp
 }
 
-export interface comments {
-    id: string
-    content: string
-    rating: string
-    interviewerId: string
-}
+// export interface comments {
+//     id: string
+//     content: string
+//     rating: string
+//     interviewerId: string
+// }

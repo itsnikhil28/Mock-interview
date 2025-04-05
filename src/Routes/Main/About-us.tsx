@@ -156,10 +156,10 @@ export default function Aboutus() {
                     <div className="container flex flex-col items-center justify-center p-4 mx-auto sm:p-10">
                         <p className="p-2 text-sm font-medium tracking-wider text-center uppercase">Development team</p>
                         <h1 className="text-4xl font-bold leading-none text-center sm:text-5xl">The talented people behind the scenes</h1>
-                        <div className="flex flex-row flex-wrap-reverse justify-center mt-25">
+                        <div className="flex flex-row flex-wrap justify-center mt-25">
                             {[
                                 {
-                                    img_src: "/assets/img/mock-interview.jpg",
+                                    img_src: "/assets/img/team_photo/Deepak.jpg",
                                     username: "Deepak Gangwar",
                                     userdesc: "Frontend Developer",
                                     usertwitter: "https://www.x.com",
@@ -167,7 +167,7 @@ export default function Aboutus() {
                                     usergithub: "https://github.com/",
                                 },
                                 {
-                                    img_src: "/assets/img/mock-interview.jpg",
+                                    img_src: "/assets/img/team_photo/Himani.jpg",
                                     username: "Himani",
                                     userdesc: "Visual Designer & Testing",
                                     usertwitter: "https://www.x.com",
@@ -175,7 +175,7 @@ export default function Aboutus() {
                                     usergithub: "https://github.com/",
                                 },
                                 {
-                                    img_src: "/assets/img/mock-interview.jpg",
+                                    img_src: "/assets/img/team_photo/Nikhil.jpg",
                                     username: "Nikhil Kumar",
                                     userdesc: "Backend Developer",
                                     usertwitter: "https://www.x.com",
