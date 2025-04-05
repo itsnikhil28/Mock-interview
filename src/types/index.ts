@@ -112,13 +112,22 @@ export interface LiveInterview {
 
 export interface InterviewerApplyRequest {
     id: string
-    userId : string
+    userId: string
     name: string
     company: string
     experience: string
     linkedin: string
     message: string
     document: string
+    created_at: Timestamp
+    updated_at: Timestamp
+}
+
+export interface MeetingQuestions {
+    id: string
+    questions: []
+    selectedlanguages: string[]
+    streamCallId: string
     created_at: Timestamp
     updated_at: Timestamp
 }

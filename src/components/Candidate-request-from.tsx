@@ -99,6 +99,60 @@ export default function CandidateRequestForm({ onClose }: { onClose: () => void 
         }
     };
 
+    const getresume = () => {
+        const file = formData.uploadedfile;
+
+        if (selectedResume) return `${import.meta.env.VITE_MAIN_WEBSITE_URL}/resume/${selectedResume}/view`;
+
+        if (typeof file === "string" && file.startsWith("https://res.cloudinary.com/")) {
+            return file;
+        }
+    };
+
+    const sendemail = () => {
+        setloading(true)
+        toast.success("Request Received! Sending email for next steps and tips.")
+
+        const interviewerdata = interviewer.filter((u) => u.id === formData.interviewerId)[0];
+
+        const resume = getresume();
+
+        const payload = {
+            userName: formData.name,
+            userEmail: formData.email,
+            resume: resume,
+            intervieweremail: interviewerdata.email,
+            interviewername: interviewerdata.name,
+        };
+
+        try {
+            fetch(`${import.meta.env.VITE_API_URL}/api/send-invite-email`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            })
+                .then(res => res.json())
+                .then(res => {
+                    if (res.success) {
+                        toast.success(res.message);
+                    } else {
+                        toast.error(res.message);
+                    }
+                })
+                .catch(err => {
+                    console.error("Error sending email:", err);
+                    toast.error("Something went wrong when sending mail.");
+                })
+                .finally(() => {
+                    setloading(false)
+                });
+        } catch (error) {
+            toast.error("Something went wrong when sending mail..")
+        }
+    }
+
     const handlesubmit = async () => {
         setloading(true)
         if (!userId) return
@@ -120,6 +174,7 @@ export default function CandidateRequestForm({ onClose }: { onClose: () => void 
         if (selectedResume && uploadedfile) {
             toast.error("Please select only one option: either choose from existing resumes or upload a new one.");
             setloading(false);
+            setSelectedResume("")
             return;
         }
 
@@ -137,7 +192,6 @@ export default function CandidateRequestForm({ onClose }: { onClose: () => void 
                 interviewerId,
                 userName: name,
                 userEmail: email,
-                // resume: selectedResume || (uploadedfile ? uploadedfile.name : null),
                 resume: formData.uploadedfile || selectedResume,
                 created_at: serverTimestamp(),
                 updated_at: serverTimestamp()
@@ -145,6 +199,8 @@ export default function CandidateRequestForm({ onClose }: { onClose: () => void 
 
             toast.success("Request submitted Successfully")
             onClose()
+
+            sendemail()
 
             setFormData((prev) => ({
                 ...prev,

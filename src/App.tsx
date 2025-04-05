@@ -157,7 +157,7 @@ function App() {
                 {
                     path: 'candidate/recordings',
                     element: <RecordingPage />
-                },
+                }
             ]
         }
     ])

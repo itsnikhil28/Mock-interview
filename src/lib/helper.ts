@@ -104,6 +104,33 @@ export const QUICK_ACTIONS_FOR_CANDIDATE = [
     },
 ];
 
+export const LANGUAGES = [
+    // Core Programming Languages
+    { id: "javascript", name: "JavaScript" },
+    { id: "typescript", name: "TypeScript" },
+    { id: "python", name: "Python" },
+    { id: "java", name: "Java" },
+    { id: "c", name: "C" },
+    { id: "cpp", name: "C++" },
+    { id: "csharp", name: "C#" },
+    { id: "php", name: "PHP" },
+
+    // Popular Frameworks & Stacks
+    { id: "mern", name: "MERN Stack (MongoDB, Express, React, Node.js)" },
+    { id: "mean", name: "MEAN Stack (MongoDB, Express, Angular, Node.js)" },
+    { id: "mevn", name: "MEVN Stack (MongoDB, Express, Vue.js, Node.js)" },
+    { id: "laravel", name: "Laravel (PHP Framework)" },
+    { id: "django", name: "Django (Python Framework)" },
+    { id: "flask", name: "Flask (Python Microframework)" },
+    { id: "spring", name: "Spring Boot (Java Framework)" },
+    { id: "dotnet", name: ".NET (C# Framework)" },
+
+    // Additional Web & Backend Technologies
+    { id: "ruby", name: "Ruby" },
+    { id: "swift", name: "Swift" },
+    { id: "kotlin", name: "Kotlin" }
+];
+
 export const CODING_QUESTIONS: CodeQuestion[] = [
     {
         id: "two-sum",
@@ -210,7 +237,7 @@ export const CODING_QUESTIONS: CodeQuestion[] = [
     },
 ];
 
-export const LANGUAGES = [
+export const LANGUAGESFor = [
     { id: "javascript", name: "JavaScript", icon: "/javascript.png" },
     { id: "python", name: "Python", icon: "/python.png" },
     { id: "java", name: "Java", icon: "/java.png" },

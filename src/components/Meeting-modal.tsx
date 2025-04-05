@@ -9,7 +9,7 @@ import { Loader2, XIcon } from "lucide-react"
 import CandidateRequestForm from "./Candidate-request-from"
 import { useUser } from "@clerk/clerk-react";
 import { useUser as userRole } from "@/provider/User-Provider";
-import { collection, getDocs } from "firebase/firestore"
+import { addDoc, arrayUnion, collection, getDocs, query, serverTimestamp, updateDoc, where } from "firebase/firestore"
 import { db } from "@/config/firebase.config"
 import { User } from "@/types"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
@@ -86,6 +86,17 @@ export default function Meetingmodal({ isOpen, onClose, title, isJoinMeeting, in
                 }
             })
 
+            await addDoc(collection(db, "liveinterviews"), {
+                title: "Instant Meeting",
+                description: "Instant Meeting",
+                interviewerId: [user?.id],
+                startTime: serverTimestamp(),
+                status: "upcoming",
+                streamCallId: id,
+                created_at: serverTimestamp(),
+                updated_at: serverTimestamp()
+            });
+
             setinvitemodal(true)
             getallusers()
             setmeetingid(call.id)
@@ -142,7 +153,7 @@ export default function Meetingmodal({ isOpen, onClose, title, isJoinMeeting, in
                 .finally(() => {
                     setLoading(false)
                     setmeetingid("")
-                });;
+                });
         } catch (error) {
             toast.error("Something went wrong when sending mail..")
         }
@@ -164,6 +175,7 @@ export default function Meetingmodal({ isOpen, onClose, title, isJoinMeeting, in
 
     const joinMeeting = async (callid: string) => {
         if (!client) return toast.error("Failed to join Meeting.. Please try again...");
+        setLoading(true)
 
         if (!user) {
             toast.error("User not authenticated");
@@ -174,6 +186,7 @@ export default function Meetingmodal({ isOpen, onClose, title, isJoinMeeting, in
 
         if (!call) {
             toast.error("Meeting not found");
+            setLoading(false)
             return;
         }
 
@@ -193,9 +206,23 @@ export default function Meetingmodal({ isOpen, onClose, title, isJoinMeeting, in
             update_members: [{ user_id: user.id, role: isInterviewer ? "interviewer" : "candidate" }],
         });
 
+        const interviewsSnapshot = await getDocs(query(collection(db, "liveinterviews"), where("streamCallId", "==", callid)));
+
+        if (!interviewsSnapshot.empty) {
+            const interviewDoc = interviewsSnapshot.docs[0];
+            const docRef = interviewDoc.ref;
+
+            if (role === "candidate") {
+                await updateDoc(docRef, { userId: user.id, updated_at: serverTimestamp() });
+            } else if (role === "interviewer") {
+                await updateDoc(docRef, { interviewerIds: arrayUnion(user.id), updated_at: serverTimestamp() });
+            }
+        } else {
+            console.log(`No document found with streamCallId: ${callid}`);
+        }
+
         toast.success("Joined the meeting successfully");
 
-        setLoading(true);
         navigate(`/meeting/${callid}`);
         setLoading(false);
     };

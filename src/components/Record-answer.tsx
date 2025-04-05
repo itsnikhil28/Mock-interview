@@ -11,6 +11,7 @@ import { cleanAiResponse } from './clean-airesponse';
 import { SaveModal } from './save-modal';
 import { addDoc, collection, getDocs, query, serverTimestamp, where } from 'firebase/firestore';
 import { db } from '@/config/firebase.config';
+import { Textarea } from './ui/textarea';
 
 interface RecordAnswerProps {
     question: { question: string; answer: string }
@@ -24,7 +25,7 @@ interface AIResponse {
 }
 
 export default function RecordAnswer({ question, iswebcam, setiswebcam }: RecordAnswerProps) {
-    const { interimResult, isRecording, results, startSpeechToText, stopSpeechToText } = useSpeechToText({
+    const { interimResult, isRecording, results, startSpeechToText, stopSpeechToText,setResults } = useSpeechToText({
         continuous: true,
         useLegacyResults: false
     });
@@ -45,12 +46,11 @@ export default function RecordAnswer({ question, iswebcam, setiswebcam }: Record
 
             if (useranswer?.length < 50) {
                 toast.error("Error", { description: "Your answer should be more than 50 characters" })
-
                 return
             }
 
-            if(useranswer.length>50){
-                toast.warning("",{ description: "Save your answer before moving to the next question" })
+            if (useranswer.length > 50) {
+                toast.warning("", { description: "Save your answer before moving to the next question" })
             }
 
             const airesult = await generateresult(question.question, question.answer, useranswer);
@@ -87,7 +87,7 @@ export default function RecordAnswer({ question, iswebcam, setiswebcam }: Record
             // Ensure we get a valid AIResponse object
             const parsedresult: AIResponse =
                 Array.isArray(rawResult) && rawResult.length > 0 && typeof rawResult[0] === "object" && "ratings" in rawResult[0] && "feedback" in rawResult[0]
-                    ? rawResult[0]  // Use first object from array
+                    ? rawResult[0]
                     : { ratings: 0, feedback: "No feedback available" };
 
             return parsedresult
@@ -103,9 +103,12 @@ export default function RecordAnswer({ question, iswebcam, setiswebcam }: Record
     }
 
     const recordnewanswer = () => {
-        setuseranswer('')
         stopSpeechToText()
-        startSpeechToText()
+        setuseranswer('')
+        setResults([])
+        setTimeout(() => {
+            startSpeechToText();
+        }, 500);
     }
 
     const saveuseranswer = async () => {
@@ -126,7 +129,6 @@ export default function RecordAnswer({ question, iswebcam, setiswebcam }: Record
             const querysnap = await getDocs(useranswerquery)
 
             if (!querysnap.empty) {
-                console.log("Query Snap Size", querysnap.size)
                 toast.info("Already Answered", {
                     description: "You have already answered this question"
                 })
@@ -224,7 +226,9 @@ export default function RecordAnswer({ question, iswebcam, setiswebcam }: Record
                 <h2 className='text-lg font-semibold'>Your Answer:</h2>
 
                 <p className='text-sm mt-2 text-gray-700 whitespace-normal'>
-                    {fetchanswer || useranswer || "Start recording to see your answer here"}
+                    {fetchanswer || useranswer && (
+                        <Textarea value={useranswer} onChange={(e) => setuseranswer(e.target.value)} className='bg-white'></Textarea>
+                    ) || "Start recording to see your answer here"}
                 </p>
 
                 {interimResult && (

@@ -1,9 +1,11 @@
 import MeetingRoom from '@/components/MeetingRoom'
 import MeetingSetup from '@/components/MeetingSetup'
+import { db } from '@/config/firebase.config'
 import { Call, StreamCall, StreamTheme, useStreamVideoClient } from '@stream-io/video-react-sdk'
+import { collection, getDocs, query, where } from 'firebase/firestore'
 import { LoaderIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 
 export default function MeetingPage() {
@@ -12,6 +14,34 @@ export default function MeetingPage() {
     const [iscallloading, setiscallloading] = useState(false)
     const client = useStreamVideoClient()
     const [isSetupComplete, setisSetupComplete] = useState(false)
+    const navigate = useNavigate()
+
+    const checkMeetingStatus = async (meetingId: string) => {
+        try {
+            const q = query(collection(db, "liveinterviews"), where("streamCallId", "==", meetingId));
+            const querySnapshot = await getDocs(q);
+
+            if (!querySnapshot.empty) {
+                const meetingData = querySnapshot.docs[0].data()
+
+                if (meetingData.status === "completed") {
+                    navigate('/')
+                    toast.error("This meeting has ended.")
+                    return;
+                }
+            }
+        } catch (error) {
+            console.error("Error checking meeting status:", error);
+            toast.error("Failed to check meeting status.");
+        }
+    }
+
+    useEffect(() => {
+        if (meetingId) {
+            checkMeetingStatus(meetingId)
+        }
+    }, [meetingId])
+
 
     useEffect(() => {
         if (!client) return;
@@ -23,16 +53,6 @@ export default function MeetingPage() {
 
                 if (calls.length > 0) {
                     const callInstance = calls[0];
-                    const response = await callInstance.queryMembers({});
-                    const members = response.members || [];
-
-                    const currentUserId = client.streamClient.user?.id;
-
-                    const isUserInCall = members.some(member => member.user_id === currentUserId);
-
-                    if (isUserInCall) {
-                        toast.error("You have already joined this call ... You cann't join it again")
-                    }
 
                     setcall(callInstance);
                 }
@@ -46,14 +66,6 @@ export default function MeetingPage() {
 
         getcall();
     }, [client, meetingId]);
-
-
-    // useEffect(() => {
-    //     const setupComplete = localStorage.getItem(`setupComplete-${meetingId}`);
-    //     if (setupComplete === "true") {
-    //         setisSetupComplete(true);
-    //     }
-    // }, [meetingId]);
 
     if (iscallloading) return (
         <div className="h-[40vh] md:h-[70vh] flex justify-center items-center">

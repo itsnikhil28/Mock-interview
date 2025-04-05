@@ -21,7 +21,7 @@ export default function Homepage() {
                 <div className="my-8">
                     <h2 className="text-3xl text-center md:text-left md:text-6xl">
                         <span className="text-outline font-semibold md:text-8xl">
-                            AI SUPERPOWER
+                            INTERVIEW PILOT
                         </span>
                         <span className="text-gray-500 font-extrabold">
                             - A better way to
@@ -37,13 +37,13 @@ export default function Homepage() {
 
                 <div className="flex w-full items-center justify-evenly md:px-12 md:py-16 md:items-center md:justify-end gap-12">
                     <p className="text-3xl font-semibold text-gray-900 text-center">
-                        250k+
+                        25+
                         <span className="block text-xl text-muted-foreground font-normal">
                             Offers Recieved
                         </span>
                     </p>
                     <p className="text-3xl font-semibold text-gray-900 text-center">
-                        1.2M+
+                        50+
                         <span className="block text-xl text-muted-foreground font-normal">
                             Interview Aced
                         </span>

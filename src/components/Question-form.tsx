@@ -5,7 +5,6 @@ import TooltipButton from "./tooltip-button";
 import { Volume2, VolumeX } from "lucide-react";
 import RecordAnswer from "./Record-answer";
 
-
 interface QuestionSectionprops {
     questions: { question: string; answer: string }[]
 }
@@ -24,16 +23,11 @@ export default function QuestionSection({ questions }: QuestionSectionprops) {
             if('speechSynthesis' in window){
                 const speech = new SpeechSynthesisUtterance(qst)
 
-                // ✅ Get available voices
                 const voices = window.speechSynthesis.getVoices();
-                // console.log(voices)
 
-                // ✅ Select a specific voice (change the index or filter by name/language)
-                speech.voice = voices.find(v => v.name.includes("Google हिन्दी")) || voices[0];
-                // speech.voice = voices.find(v => v.name.includes("Google UK English Female")) || voices[0];
+                // speech.voice = voices.find(v => v.name.includes("Google हिन्दी")) || voices[0];
+                speech.voice = voices.find(v => v.name.includes("Google UK English Female")) || voices[0];
                 
-
-                // ✅ Set voice properties (optional)
                 speech.rate = 1;   // Speed (default: 1)
                 speech.pitch = 0.8;  // Pitch (default: 1)
                 speech.volume = 0.7; // Volume (0 to 1)
