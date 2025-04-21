@@ -433,8 +433,12 @@ function CodeEditor() {
                                                             <p className="font-medium text-sm">Example {index + 1}:</p>
                                                             <ScrollArea className="h-full w-full rounded-md">
                                                                 <pre className="bg-muted/50 p-3 rounded-lg text-sm font-mono w-full">
-                                                                    <div>Input: {example.input}</div>
-                                                                    <div>Output: {example.output}</div>
+                                                                    <div>
+                                                                        Input: {typeof example.input === "string" ? example.input : JSON.stringify(example.input)}
+                                                                    </div>
+                                                                    <div>
+                                                                        Output: {typeof example.output === "string" ? example.output : JSON.stringify(example.output)}
+                                                                    </div>
                                                                     {example.explanation && (
                                                                         <div className="pt-2 text-muted-foreground">
                                                                             Explanation: {example.explanation}
