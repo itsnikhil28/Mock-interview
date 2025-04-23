@@ -116,9 +116,6 @@ export const LANGUAGES = [
     { id: "php", name: "PHP" },
 
     // Popular Frameworks & Stacks
-    { id: "mern", name: "MERN Stack (MongoDB, Express, React, Node.js)" },
-    { id: "mean", name: "MEAN Stack (MongoDB, Express, Angular, Node.js)" },
-    { id: "mevn", name: "MEVN Stack (MongoDB, Express, Vue.js, Node.js)" },
     { id: "laravel", name: "Laravel (PHP Framework)" },
     { id: "django", name: "Django (Python Framework)" },
     { id: "flask", name: "Flask (Python Microframework)" },

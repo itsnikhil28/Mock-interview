@@ -22,14 +22,25 @@ export default function MeetingPage() {
             const querySnapshot = await getDocs(q);
 
             if (!querySnapshot.empty) {
-                const meetingData = querySnapshot.docs[0].data()
+                const meetingData = querySnapshot.docs[0].data();
+
+                const currentTime = Date.now();
+                const startTime = meetingData.startTime;
 
                 if (meetingData.status === "completed") {
-                    navigate('/')
-                    toast.error("This meeting has ended.")
+                    navigate('/');
+                    toast.error("This meeting has ended.");
+                    return;
+                }
+
+                if (currentTime < startTime) {
+                    const formattedTime = new Date(startTime).toLocaleString();
+                    navigate('/');
+                    toast.error(`This meeting has not started yet. It will start at ${formattedTime}.`);
                     return;
                 }
             }
+
         } catch (error) {
             console.error("Error checking meeting status:", error);
             toast.error("Failed to check meeting status.");

@@ -47,6 +47,7 @@ function CodeEditor() {
     const [languagefromdb, setLanguagefromdb] = useState<any[] | null>([]);
     const [code, setCode] = useState<string>("");
     const [showquestion, setshowquestion] = useState(false)
+    const [isDataAvailable, setIsDataAvailable] = useState(false);
     const { role } = useUser()
     const navigate = useNavigate()
 
@@ -99,58 +100,57 @@ function CodeEditor() {
             } catch (error) {
                 console.error("Error saving questions: ", error);
                 toast.error("Could not save questions.");
+                setIsDataAvailable(false)
             }
         } else {
             toast.error("Could not generate Question.. Try again")
+            setIsDataAvailable(false)
         }
         setshowquestion(true)
     }
 
     const generateresult = async (noofquestion: string, languages: string): Promise<AIResponse[]> => {
         setloading(true)
-        const prompt = `Generate ${noofquestion} unique coding questions in the following structured JSON format.Each question should cover different problem - solving concepts like arrays, strings, recursion, searching, sorting, dynamic programming, etc.
+        const prompt = `Generate ${noofquestion} unique coding questions in strict JSON format only. Each question must cover different problem-solving concepts like arrays, strings, recursion, searching, sorting, dynamic programming, etc.
 
-        ### ** Required Format:**
-            Each question should be structured as follows:
+            Return only valid JSON. Do not include any explanation, comments, or markdown formatting. The response must be a raw JSON array of objects, like this:
 
-        {
-            "id": "unique-question-id",
-            "title": "Question Title",
-            "description": "A clear and detailed problem statement explaining what needs to be solved.",
-            "examples": [
-                    {
-                        "input": "Example input",
-                        "output": "Expected output",
-                        "explanation": "Explanation of how the output is derived (if necessary)."
-                    }
-                ],
-            "starterCode": {
-                    "javascript": 'function exampleFunction() {
-                        // Implement your solution here
-                    },
-                    'python': 'def example_function():
-                        # Implement your solution here
-                        pass,
-                    "java": 'class Solution {
-                        public void exampleFunction() {
-                            // Implement your solution here
-                        }
-                    }'
+            [
+            {
+                "id": "unique-question-id",
+                "title": "Question Title",
+                "description": "A clear and detailed problem statement explaining what needs to be solved.",
+                "examples": [
+                {
+                    "input": "Example input",
+                    "output": "Expected output",
+                    "explanation": "Explanation of how the output is derived (if necessary)."
                 },
-            "constraints": [
+                {
+                    "input": "Another input",
+                    "output": "Another output",
+                    "explanation": "Explanation for the second example."
+                }
+                ],
+                "starterCode": {
+                "javascript": "function exampleFunction() {\n  // Implement your solution here\n}",
+                "python": "def example_function():\n  # Implement your solution here\n  pass",
+                "java": "class Solution {\n  public void exampleFunction() {\n    // Implement your solution here\n  }\n}"
+                },
+                "constraints": [
                 "Constraint 1",
                 "Constraint 2"
+                ],
+                "languages": ["${languages}"]
+            }
             ]
-            "languages" : [${languages}]
-        }
 
-        ### ** Guidelines:**
-            1. The questions should have ** unique problem statements ** covering a mix of easy, medium, and hard levels.
-            2. Provide ** at least two examples per question ** with valid inputs and outputs.
-            3. Ensure that the ** starter code matches the selected programming languages **: { selected_languages }.
-            4. If the problem requires constraints(e.g., array size limits, integer value ranges), include them.
-
-            Now, generate ${noofquestion} questions in this format, ensuring diversity in problem types and difficulty levels.The required programming languages are: ${languages}. `
+            Requirements:
+            1. Questions must include a mix of easy, medium, and hard difficulty.
+            2. Each question must contain exactly two examples.
+            3. Use only the programming languages specified: ${languages}.
+            4. Do not include markdown, explanations, or anything else outside the JSON array.
+            `;
         try {
             const airesult = await chatSession.sendMessage(prompt)
 
@@ -166,6 +166,7 @@ function CodeEditor() {
                     constraints: Array.isArray(item.constraints) ? item.constraints : []
                 })) as AIResponse[];
             } else {
+                setIsDataAvailable(false)
                 return [] as AIResponse[];
             }
         } catch (error) {
@@ -173,6 +174,7 @@ function CodeEditor() {
             toast("Error", {
                 description: "An error occurred while generating questions."
             })
+            setIsDataAvailable(false)
             return [] as AIResponse[];
         } finally {
             setloading(false)
@@ -224,8 +226,6 @@ function CodeEditor() {
         }
     }
 
-    const [isDataAvailable, setIsDataAvailable] = useState(false);
-
     const checkIfDataExists = async (meetingId: string) => {
         try {
             const q = query(collection(db, "meeting_questions"), where("streamCallId", "==", meetingId))
@@ -252,7 +252,7 @@ function CodeEditor() {
             checkIfDataExists(meetingId);
         } else {
             toast.error('Meeting Id not set...')
-            navigate('/') 
+            navigate('/')
         }
     }, [meetingId]);
 

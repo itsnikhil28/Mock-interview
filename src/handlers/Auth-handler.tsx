@@ -6,7 +6,11 @@ import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore"
 import { useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 
-export default function AuthHandler() {
+interface AuthHandlerProps {
+    children: React.ReactNode
+}
+
+export default function AuthHandler({ children }: AuthHandlerProps) {
     const { isSignedIn } = useAuth()
     const { user } = useUser()
 
@@ -51,6 +55,6 @@ export default function AuthHandler() {
     }
 
     return (
-        null
+        <>{children}</>
     )
 }

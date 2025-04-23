@@ -9,10 +9,11 @@ export default function PublicLayout() {
         <div className='w-full'>
             <ScrollToTop />
 
-            <AuthHandler />
-            <Header />
-            <Outlet />
-            <Footer />
+            <AuthHandler>
+                <Header />
+                <Outlet />
+                <Footer />
+            </AuthHandler>
         </div>
     )
 }

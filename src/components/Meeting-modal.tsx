@@ -109,8 +109,19 @@ export default function Meetingmodal({ isOpen, onClose, title, isJoinMeeting, in
         }
     }
 
-    const sendemail = () => {
+    const sendemail = async () => {
         setLoading(true)
+
+        const interviewsSnapshot = await getDocs(query(collection(db, "liveinterviews"), where("streamCallId", "==", meetingid)));
+
+        if (!interviewsSnapshot.empty) {
+            const interviewDoc = interviewsSnapshot.docs[0];
+            const docRef = interviewDoc.ref;
+
+            await updateDoc(docRef, { userId: selectedmember[0]['id'], updated_at: serverTimestamp() })
+        } else {
+            console.log(`No document found with streamCallId: ${meetingid}`);
+        }
 
         if (!meetingid.trim()) {
             toast.error("MeetingId is missing");
@@ -210,6 +221,18 @@ export default function Meetingmodal({ isOpen, onClose, title, isJoinMeeting, in
         if (!interviewsSnapshot.empty) {
             const interviewDoc = interviewsSnapshot.docs[0];
             const docRef = interviewDoc.ref;
+
+            const interviewData = interviewDoc.data();
+
+            const currentTime = Date.now();
+            const startTime = interviewData.startTime;
+
+            if (currentTime < startTime) {
+                const formattedTime = new Date(startTime).toLocaleString();
+                navigate('/');
+                toast.error(`This meeting has not started yet. It will start at ${formattedTime}.`);
+                return;
+            }
 
             if (role === "candidate") {
                 await updateDoc(docRef, { userId: user.id, updated_at: serverTimestamp() });
