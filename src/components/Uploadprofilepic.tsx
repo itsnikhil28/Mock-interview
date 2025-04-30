@@ -34,7 +34,7 @@ export default function UploadPicForm({ userId, onUploadSuccess }: UploadPicForm
         try {
             setUploading(true)
 
-            const res = await axios.post("http://localhost:5000/api/uploadProfilePic", formData, {
+            const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/uploadProfilePic`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
