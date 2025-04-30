@@ -15,6 +15,7 @@ export default function MeetingPage() {
     const client = useStreamVideoClient()
     const [isSetupComplete, setisSetupComplete] = useState(false)
     const navigate = useNavigate()
+    const [meetingData, setMeetingData] = useState<any>(null)
 
     const checkMeetingStatus = async (meetingId: string) => {
         try {
@@ -23,6 +24,7 @@ export default function MeetingPage() {
 
             if (!querySnapshot.empty) {
                 const meetingData = querySnapshot.docs[0].data();
+                setMeetingData(meetingData);
 
                 const currentTime = Date.now();
                 const startTime = meetingData.startTime;
@@ -97,7 +99,7 @@ export default function MeetingPage() {
                 {!isSetupComplete ? (
                     <MeetingSetup onSetupComplete={() => setisSetupComplete(true)} />
                 ) : (
-                    <MeetingRoom />
+                    <MeetingRoom meetingData={meetingData} />
                 )}
             </StreamTheme>
         </StreamCall>

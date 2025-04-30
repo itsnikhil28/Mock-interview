@@ -318,7 +318,9 @@ export default function CandidateRequestForm({ onClose }: { onClose: () => void 
                                 </>
                             )}
                             {uploadingresume && (
-                                <p className="text-blue-600 text-sm mt-2 flex justify-center"><Loader2 className="animate-spin" /></p>
+                                <p className="text-blue-600 text-sm mt-2 flex justify-center">
+                                    <Loader2 className="animate-spin" />
+                                </p>
                             )}
                         </div>
                     )}

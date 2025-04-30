@@ -237,7 +237,7 @@ export default function Meetingmodal({ isOpen, onClose, title, isJoinMeeting, in
             if (role === "candidate") {
                 await updateDoc(docRef, { userId: user.id, updated_at: serverTimestamp() });
             } else if (role === "interviewer") {
-                await updateDoc(docRef, { interviewerIds: arrayUnion(user.id), updated_at: serverTimestamp() });
+                await updateDoc(docRef, { interviewerId: arrayUnion(user.id), updated_at: serverTimestamp() });
             }
         } else {
             console.log(`No document found with streamCallId: ${callid}`);

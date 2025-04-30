@@ -5,6 +5,7 @@ export interface User {
     name: string
     email: string
     imageUrl: string
+    pic: string
     role: "interviewer" | "candidate"
     created_at: Timestamp | FieldValue
     updated_at: Timestamp | FieldValue
