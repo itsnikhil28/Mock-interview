@@ -264,10 +264,10 @@ export default function FormMockInterview({ initialdata }: FormMockInterviewprop
 
                         <div className="w-full flex items-center justify-end gap-6">
                             <Button type="button" size={"sm"} variant={"outline"} disabled={isSubmitting || loading}
-                            // onClick={() => 
-                            //     // console.log("Form Reset Function:", form.reset)
-                            // }
-                            >Reset</Button>
+                            onClick={() => 
+                                navigate("/generate", { replace: true })
+                            }
+                            >Back</Button>
                             <Button type="submit" size={"sm"} disabled={isSubmitting || loading}>{loading ? (<Loader className="text-gray-50 animate-spin" />) : (actions)}</Button>
                         </div>
                     </form>

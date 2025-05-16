@@ -42,8 +42,6 @@ export default function UploadPicForm({ userId, onUploadSuccess }: UploadPicForm
 
             const picUrl = res.data.url
 
-            console.log(picUrl)
-
             await updateDoc(doc(db, "users", userId), {
                 pic: picUrl,
                 updated_at: serverTimestamp(),

@@ -11,7 +11,6 @@ import { LiveInterview } from "@/types"
 import { collection, getDocs, query, where } from "firebase/firestore"
 import { db } from "@/config/firebase.config"
 import { Card, CardContent } from "./ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
 import { Badge } from "./ui/badge"
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert"
 import { useUser } from "@/provider/User-Provider"
@@ -44,10 +43,10 @@ export default function MeetingRoom({ meetingData }: { meetingData: LiveIntervie
     return (
         <>
             {userDetails && (
-                <div className="flex flex-row gap-3 mx-auto">
+                <div className="flex flex-col md:flex-row gap-3 mx-auto">
                     {/* Left: Card with user details */}
                     <Card className="w-full max-w-md p-4">
-                        <CardContent className="flex flex-row items-start space-x-6">
+                        <CardContent className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6 overflow-hidden">
                             <img
                                 src={userDetails.pic}
                                 alt={userDetails.name}
@@ -143,9 +142,9 @@ export default function MeetingRoom({ meetingData }: { meetingData: LiveIntervie
                         </div>
                     </ResizablePanel>
 
-                    <ResizableHandle withHandle />
+                    <ResizableHandle withHandle className="hidden md:block" />
 
-                    <ResizablePanel defaultSize={60} minSize={25}>
+                    <ResizablePanel defaultSize={60} minSize={25} className="hidden md:block">
                         <CodeEditor />
                     </ResizablePanel>
                 </ResizablePanelGroup>

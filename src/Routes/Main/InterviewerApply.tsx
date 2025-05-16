@@ -61,7 +61,6 @@ export default function InterviewerApply() {
             }
 
             const data = await response.json();
-            console.log("Uploaded File URL:", data.url);
 
             setFormData((prev) => ({ ...prev, uploadedfile: data.url }));
             toast.success("Resume uploaded successfully!");

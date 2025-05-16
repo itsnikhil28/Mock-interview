@@ -16,7 +16,7 @@ export default function InterviewData({ interview, onmockpage = false }: Intervi
     const navigate = useNavigate()
 
     return (
-        <Card className="p-4 rounded-md shadow-none hover:shadow-md shadow-gray-100 cursor-pointer transition-all space-y-4">
+        <Card className="max-w-md w-full p-4 rounded-md shadow-none hover:shadow-md shadow-gray-100 cursor-pointer transition-all space-y-4">
             <CardHeader className="mb-0 p-0">
                 <CardTitle className="text-lg">{interview?.position.toLocaleUpperCase()}</CardTitle>
                 <CardDescription>{interview?.description}</CardDescription>
