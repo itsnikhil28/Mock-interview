@@ -203,12 +203,22 @@ export default function Meetingmodal({ isOpen, onClose, title, isJoinMeeting, in
         const response = await call.queryMembers({});
         const members = response.members || [];
 
+        const currentuserincall = members.find(member => member.user_id === user?.id);
+
+        if (currentuserincall) {
+            toast.info("You are already in the meeting. Navigating to meeting...");
+            navigate(`/meeting/${callid}`);
+            setLoading(false);
+            return;
+        }
+
         const candidateCount = members.filter(member => member.role === "candidate").length;
 
         const isInterviewer = role === "interviewer";
 
         if (!isInterviewer && candidateCount >= 1) {
             toast.error("Only one candidate can join the meeting.");
+            setLoading(false);
             return;
         }
 

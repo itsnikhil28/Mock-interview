@@ -1,12 +1,14 @@
 import MeetingRoom from '@/components/MeetingRoom'
 import MeetingSetup from '@/components/MeetingSetup'
 import { db } from '@/config/firebase.config'
+import { useUser } from '@clerk/clerk-react'
 import { Call, StreamCall, StreamTheme, useStreamVideoClient } from '@stream-io/video-react-sdk'
 import { collection, getDocs, query, where } from 'firebase/firestore'
 import { LoaderIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
+import { useUser as userRole } from "@/provider/User-Provider";
 
 export default function MeetingPage() {
     const { meetingId } = useParams()
@@ -16,6 +18,8 @@ export default function MeetingPage() {
     const [isSetupComplete, setisSetupComplete] = useState(false)
     const navigate = useNavigate()
     const [meetingData, setMeetingData] = useState<any>(null)
+    const { user } = useUser()
+    const { role } = userRole()
 
     const checkMeetingStatus = async (meetingId: string) => {
         try {
@@ -41,11 +45,26 @@ export default function MeetingPage() {
                     toast.error(`This meeting has not started yet. It will start at ${formattedTime}.`);
                     return;
                 }
+
+                if (role === "candidate") {
+                    if (meetingData.userId !== user?.id) {
+                        navigate('/');
+                        toast.error("You are not authorized to join this meeting.");
+                        return false;
+                    }
+                }                
+                return true
+            } else {
+                toast.error("Meeting not found.");
+                navigate('/');
+                return false;
             }
 
         } catch (error) {
             console.error("Error checking meeting status:", error);
             toast.error("Failed to check meeting status.");
+            navigate('/')
+            return false
         }
     }
 
@@ -53,7 +72,7 @@ export default function MeetingPage() {
         if (meetingId) {
             checkMeetingStatus(meetingId)
         }
-    }, [meetingId])
+    }, [meetingId,role])
 
 
     useEffect(() => {

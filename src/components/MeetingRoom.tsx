@@ -142,7 +142,7 @@ export default function MeetingRoom({ meetingData }: { meetingData: LiveIntervie
                         </div>
                     </ResizablePanel>
 
-                    <ResizableHandle withHandle className="hidden md:block" />
+                    <ResizableHandle withHandle className="hidden md:flex" />
 
                     <ResizablePanel defaultSize={60} minSize={25} className="hidden md:block">
                         <CodeEditor />
